@@ -22,7 +22,7 @@ fn send_get(session: &str, url: &str) -> reqwest::Result<String> {
     // Fetch response
     let res = client.execute(client.get(url).build()?)?;
 
-    Ok(res.text()?)
+    Ok(res.text()?.trim().to_string())
 }
 
 pub fn extract_integer<T: std::str::FromStr>(s: &str) -> Result<T, &str> {
@@ -47,7 +47,7 @@ pub fn get_session() -> String {
         // Write session in file to avoid asking user everytime
         fs::write(session_file, &session.trim().to_string()).unwrap();
 
-        session
+        session.trim().to_string()
     }
 }
 
