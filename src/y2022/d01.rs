@@ -1,41 +1,15 @@
-pub fn parse_input(input: &str) -> Vec<i32> {
-	input.lines().map(|l| if l.is_empty() {
-		-1
-	} else {
-		l.parse().unwrap()
-	}).collect()
+use itertools::Itertools;
+
+pub fn parse_input(input: &str) -> Vec<Vec<i32>> {
+	input.split("\n\n").map(|elf| elf.lines().map(|l| l.parse().unwrap()).collect()).collect()
 }
 
-pub fn part1(input: &[i32]) -> i32 {
-	let mut most = 0;
-	let mut tmp = 0;
-	for &i in input {
-		if i == -1 {
-			if tmp > most {
-				most = tmp;
-			}
-			tmp = 0;
-		}
-		tmp += i;
-	}
-	most + 1
+pub fn part1(input: &[Vec<i32>]) -> i32 {
+	input.iter().map(|elf| elf.iter().sum()).max().unwrap()
 }
 
-pub fn part2(input: &[i32]) -> i32 {
-	let mut lst = vec![];
-	let mut tmp = 0;
-	for &i in input {
-		if i == -1 {
-			lst.push(tmp + 1);
-			tmp = 0;
-		}
-		tmp += i;
-	}
-	lst.push(tmp + 1);
-
-	lst.sort_by(|a, b| b.cmp(a));
-	dbg!(&lst);
-	lst[0] + lst[1] + lst[2]
+pub fn part2(input: &[Vec<i32>]) -> i32 {
+	input.iter().map(|elf| elf.iter().sum()).sorted_by(|a: &i32, b: &i32| b.cmp(a)).take(3).sum()
 }
 
 #[cfg(test)]
