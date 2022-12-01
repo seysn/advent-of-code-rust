@@ -17,7 +17,10 @@ fn send_get(session: &str, url: &str) -> reqwest::Result<String> {
 	// Building HTTP Header
 	let mut headers = HeaderMap::new();
 	headers.append(COOKIE, session.parse().expect("Couldn't parse session"));
-	let client = Client::builder().default_headers(headers).build()?;
+	let client = Client::builder()
+		.user_agent("github.com/seysn/advent-of-code-rust by seys.nicolas@gmail.com")
+		.default_headers(headers)
+		.build()?;
 
 	// Fetch response
 	let res = client.execute(client.get(url).build()?)?;
