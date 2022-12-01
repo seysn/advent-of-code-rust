@@ -53,7 +53,7 @@ mod tests {
 
 	#[test]
 	fn example_part2() {
-		assert_eq!(part1(&parse_input(")")), 1);
-		assert_eq!(part1(&parse_input("()())")), 5);
+		assert_eq!(part2(&parse_input(")")), 1);
+		assert_eq!(part2(&parse_input("()())")), 5);
 	}
 }
