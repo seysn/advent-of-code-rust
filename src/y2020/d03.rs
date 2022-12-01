@@ -26,7 +26,7 @@ impl Map {
 
 pub fn parse_input(input: &str) -> Map {
 	Map {
-		grid: input.split("\n").map(|l| l.to_string()).collect(),
+		grid: input.split('\n').map(|l| l.to_string()).collect(),
 	}
 }
 
@@ -43,7 +43,7 @@ pub fn part2(input: &Map) -> u32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "..##.......
+	const EXAMPLE: &str = "..##.......
 #...#...#..
 .#....#..#.
 ..#.#...#.#

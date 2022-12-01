@@ -13,7 +13,7 @@ pub struct Board {
 impl Board {
 	fn new(board: Vec<Vec<u32>>) -> Board {
 		Board {
-			board: board,
+			board,
 			found: vec![vec![false; 5]; 5],
 			won: false,
 		}
@@ -89,10 +89,7 @@ pub fn parse_input(content: &str) -> Bingo {
 	}
 
 	boards.push(Board::new(buffer));
-	Bingo {
-		numbers: numbers,
-		boards: boards,
-	}
+	Bingo { numbers, boards }
 }
 
 pub fn part1(input: &Bingo) -> u32 {
@@ -103,8 +100,8 @@ pub fn part1(input: &Bingo) -> u32 {
 			board.find(number);
 
 			let res = board.compute_win();
-			if res.is_some() {
-				return res.unwrap() * number;
+			if let Some(r) = res {
+				return r * number;
 			}
 		}
 	}
@@ -128,10 +125,10 @@ pub fn part2(input: &Bingo) -> u32 {
 			// This is unefficient, as we compute a summary of all unmarked numbers, even when we don't want them,
 			// but i'm too lazy to optimize it. I've got an answer under 1 second, that's way enough for me !
 			let res = board.compute_win();
-			if res.is_some() {
+			if let Some(r) = res {
 				won_cpt += 1;
 				if won_cpt == boards_len {
-					return res.unwrap() * number;
+					return r * number;
 				}
 			}
 		}
@@ -144,7 +141,7 @@ pub fn part2(input: &Bingo) -> u32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+	const EXAMPLE: &str = "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
  8  2 23  4 24

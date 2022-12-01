@@ -31,7 +31,7 @@ pub fn part2(input: &[i32]) -> i32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "16,1,2,0,4,2,7,1,2,14";
+	const EXAMPLE: &str = "16,1,2,0,4,2,7,1,2,14";
 
 	#[test]
 	fn example_part1() {

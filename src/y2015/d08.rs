@@ -2,7 +2,7 @@ pub fn parse_input(input: &str) -> Vec<String> {
 	input.lines().map(|l| l.to_string()).collect()
 }
 
-fn length(s: &String) -> (usize, usize) {
+fn length(s: &str) -> (usize, usize) {
 	let mut raw = 0;
 	let mut data = 0;
 	let mut iter = s.chars();
@@ -31,7 +31,7 @@ fn length(s: &String) -> (usize, usize) {
 	(raw, data)
 }
 
-fn encode(s: &String) -> String {
+fn encode(s: &str) -> String {
 	let mut iter = s.chars();
 	let mut res = String::new();
 	res.push('"');
@@ -73,7 +73,7 @@ pub fn part2(input: &[String]) -> usize {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "\"\"
+	const EXAMPLE: &str = "\"\"
 \"abc\"
 \"aaa\\\"aaa\"
 \"\\x27\"";

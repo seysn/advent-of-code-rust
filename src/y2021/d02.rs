@@ -2,7 +2,7 @@ pub fn parse_input(content: &str) -> Vec<(String, i32)> {
 	content
 		.lines()
 		.map(|l| {
-			let mut t = l.split(" ");
+			let mut t = l.split(' ');
 			(t.next().unwrap().to_owned(), t.next().unwrap().parse().unwrap())
 		})
 		.collect()
@@ -48,7 +48,7 @@ pub fn part2(input: &[(String, i32)]) -> i32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "forward 5
+	const EXAMPLE: &str = "forward 5
 down 5
 forward 8
 up 3

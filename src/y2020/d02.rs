@@ -17,7 +17,7 @@ pub fn parse_input(input: &str) -> Vec<Password> {
 			Password {
 				start: cap[1].parse().unwrap(),
 				end: cap[2].parse().unwrap(),
-				letter: cap[3].chars().nth(0).unwrap(),
+				letter: cap[3].chars().next().unwrap(),
 				password: cap[4].to_string(),
 			}
 		})
@@ -53,7 +53,7 @@ pub fn part2(input: &[Password]) -> u32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "1-3 a: abcde
+	const EXAMPLE: &str = "1-3 a: abcde
 1-3 b: cdefg
 2-9 c: ccccccccc";
 

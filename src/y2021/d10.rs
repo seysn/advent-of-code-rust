@@ -102,7 +102,7 @@ pub fn part2(input: &[Line]) -> u64 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "[({(<(())[]>[[{[]{<()<>>
+	const EXAMPLE: &str = "[({(<(())[]>[[{[]{<()<>>
 [(()[<>])]({[<{<<[]>>(
 {([(<{}[<>[]}>{[]{[(<()>
 (((({<>}<{<{<>}{[]{[]{}

@@ -6,7 +6,7 @@ pub struct Dimension {
 
 impl Dimension {
 	fn parse(line: &str) -> Dimension {
-		let d: Vec<u32> = line.split("x").map(|v| v.parse().unwrap()).collect();
+		let d: Vec<u32> = line.split('x').map(|v| v.parse().unwrap()).collect();
 		Dimension {
 			length: d[0],
 			width: d[1],
@@ -28,7 +28,7 @@ impl Dimension {
 }
 
 pub fn parse_input(input: &str) -> Vec<Dimension> {
-	input.lines().map(|l| Dimension::parse(l)).collect()
+	input.lines().map(Dimension::parse).collect()
 }
 
 pub fn part1(input: &[Dimension]) -> u32 {
@@ -43,8 +43,8 @@ pub fn part2(input: &[Dimension]) -> u32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE1: &'static str = "2x3x4";
-	const EXAMPLE2: &'static str = "1x1x10";
+	const EXAMPLE1: &str = "2x3x4";
+	const EXAMPLE2: &str = "1x1x10";
 
 	#[test]
 	fn example_part1() {

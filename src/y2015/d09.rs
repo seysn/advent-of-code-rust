@@ -65,7 +65,7 @@ pub fn part2(input: &Cities) -> u32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "London to Dublin = 464
+	const EXAMPLE: &str = "London to Dublin = 464
 London to Belfast = 518
 Dublin to Belfast = 141";
 

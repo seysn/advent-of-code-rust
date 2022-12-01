@@ -5,7 +5,7 @@ pub enum Direction {
 	East,
 }
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub struct Position(i32, i32);
 
 impl Position {

@@ -11,9 +11,9 @@ macro_rules! run_day {
 		use $day::{parse_input, part1, part2};
 
 		// Read and parse input
-		let content = crate::utils::get_input(
-			crate::utils::extract_integer(stringify!($year)).unwrap(),
-			crate::utils::extract_integer(stringify!($day)).unwrap(),
+		let content = $crate::utils::get_input(
+			$crate::utils::extract_integer(stringify!($year)).unwrap(),
+			$crate::utils::extract_integer(stringify!($day)).unwrap(),
 		);
 		let input = parse_input(&content);
 

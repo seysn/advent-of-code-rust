@@ -115,7 +115,7 @@ pub fn part2(input: &[Instruction]) -> usize {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "turn on 0,0 through 999,999
+	const EXAMPLE: &str = "turn on 0,0 through 999,999
 toggle 0,0 through 999,0
 turn off 499,499 through 500,500";
 

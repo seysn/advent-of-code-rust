@@ -53,8 +53,8 @@ fn get_signal(wire: &String, wires: &HashMap<String, Instruction>, cache: &mut H
 	}
 
 	let parsed: Result<u16, std::num::ParseIntError> = wire.parse();
-	if parsed.is_ok() {
-		return parsed.unwrap();
+	if let Ok(value) = parsed {
+		return value;
 	}
 
 	let inst = wires.get(wire).unwrap();
@@ -89,7 +89,7 @@ pub fn part2(input: &HashMap<String, Instruction>) -> u16 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "123 -> x
+	const EXAMPLE: &str = "123 -> x
 456 -> y
 x AND y -> d
 x OR y -> e

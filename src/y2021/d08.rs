@@ -10,14 +10,7 @@ pub fn part1(input: &[Vec<&str>]) -> usize {
 	let mut cpt = 0;
 
 	for line in input.iter() {
-		cpt += line
-			.iter()
-			.skip(10)
-			.filter(|&&x| match x.len() {
-				2 | 3 | 4 | 7 => true,
-				_ => false,
-			})
-			.count();
+		cpt += line.iter().skip(10).filter(|&&x| matches!(x.len(), 2 | 3 | 4 | 7)).count();
 	}
 
 	cpt
@@ -27,8 +20,8 @@ pub fn part2(input: &[Vec<&str>]) -> u64 {
 	let mut cpt = 0;
 
 	for line in input.iter() {
-		let uniques: Vec<&str> = line.iter().take(10).map(|&x| x).collect();
-		let digits: Vec<&str> = line.iter().skip(10).take(4).map(|&x| x).collect();
+		let uniques: Vec<&str> = line.iter().take(10).copied().collect();
+		let digits: Vec<&str> = line.iter().skip(10).take(4).copied().collect();
 
 		let digit_one = *uniques.iter().find(|&&x| x.len() == 2).unwrap();
 		let digit_four = *uniques.iter().find(|&&x| x.len() == 4).unwrap();
@@ -74,8 +67,8 @@ pub fn part2(input: &[Vec<&str>]) -> u64 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE1: &'static str = "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf";
-	const EXAMPLE2: &'static str = "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+	const EXAMPLE1: &str = "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf";
+	const EXAMPLE2: &str = "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
 edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
 fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
 fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb

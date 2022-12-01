@@ -69,7 +69,7 @@ pub fn part2(input: &[(u32, u32, u32, u32)]) -> usize {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "0,9 -> 5,9
+	const EXAMPLE: &str = "0,9 -> 5,9
 8,0 -> 0,8
 9,4 -> 3,4
 2,2 -> 2,1

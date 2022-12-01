@@ -37,7 +37,7 @@ pub fn part2(input: &[String]) -> usize {
 		.filter(|&string| {
 			let mut res = false;
 			for chars in string.chars().collect::<Vec<char>>().windows(2) {
-				if string.matches(&String::from_iter(chars)).collect::<Vec<&str>>().len() > 1 {
+				if string.matches(&String::from_iter(chars)).count() > 1 {
 					res = true;
 					break;
 				}

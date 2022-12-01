@@ -14,7 +14,7 @@ pub fn part2(input: &[i32]) -> i32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "";
+	const EXAMPLE: &str = "";
 
 	#[test]
 	fn example_part1() {

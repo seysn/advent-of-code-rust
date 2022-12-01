@@ -1,5 +1,3 @@
-use md5;
-
 pub fn parse_input(input: &str) -> String {
 	String::from(input)
 }

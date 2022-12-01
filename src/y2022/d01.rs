@@ -1,7 +1,10 @@
 use itertools::Itertools;
 
 pub fn parse_input(input: &str) -> Vec<Vec<i32>> {
-	input.split("\n\n").map(|elf| elf.lines().map(|l| l.parse().unwrap()).collect()).collect()
+	input
+		.split("\n\n")
+		.map(|elf| elf.lines().map(|l| l.parse().unwrap()).collect())
+		.collect()
 }
 
 pub fn part1(input: &[Vec<i32>]) -> i32 {
@@ -9,14 +12,19 @@ pub fn part1(input: &[Vec<i32>]) -> i32 {
 }
 
 pub fn part2(input: &[Vec<i32>]) -> i32 {
-	input.iter().map(|elf| elf.iter().sum()).sorted_by(|a: &i32, b: &i32| b.cmp(a)).take(3).sum()
+	input
+		.iter()
+		.map(|elf| elf.iter().sum())
+		.sorted_by(|a: &i32, b: &i32| b.cmp(a))
+		.take(3)
+		.sum()
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "1000
+	const EXAMPLE: &str = "1000
 2000
 3000
 

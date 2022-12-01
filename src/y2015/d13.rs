@@ -89,7 +89,7 @@ pub fn part2(input: &Family) -> i32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "Alice would gain 54 happiness units by sitting next to Bob.
+	const EXAMPLE: &str = "Alice would gain 54 happiness units by sitting next to Bob.
 Alice would lose 79 happiness units by sitting next to Carol.
 Alice would lose 2 happiness units by sitting next to David.
 Bob would gain 83 happiness units by sitting next to Alice.

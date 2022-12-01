@@ -1,23 +1,25 @@
+use std::fmt::Write as _;
+
 pub fn parse_input(input: &str) -> String {
 	String::from(input)
 }
 
 fn step(sequence: &str) -> String {
 	let mut res = String::new();
-	let mut prev = sequence.chars().nth(0).unwrap();
+	let mut prev = sequence.chars().next().unwrap();
 	let mut cpt = 1;
 
 	for c in sequence.chars().skip(1) {
 		if prev == c {
 			cpt += 1;
 		} else {
-			res.push_str(&format!("{}{}", cpt, prev));
+			write!(res, "{}{}", cpt, prev).unwrap();
 			cpt = 1;
 			prev = c;
 		}
 	}
 
-	res.push_str(&format!("{}{}", cpt, prev));
+	write!(res, "{}{}", cpt, prev).unwrap();
 
 	res
 }

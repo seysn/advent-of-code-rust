@@ -84,7 +84,7 @@ pub fn part2(input: &[Vec<u8>]) -> usize {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "2199943210
+	const EXAMPLE: &str = "2199943210
 3987894921
 9856789892
 8767896789

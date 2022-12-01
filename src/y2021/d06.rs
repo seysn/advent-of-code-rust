@@ -21,9 +21,7 @@ pub fn part1(input: &[u32]) -> usize {
 			}
 		}
 
-		for _ in 0..new_fishes {
-			tmp.push(8);
-		}
+		tmp.resize(tmp.len() + new_fishes, 8);
 
 		new_fishes = 0;
 		state = tmp;
@@ -44,7 +42,7 @@ pub fn part2(input: &[u32]) -> u64 {
 		let mut last = 0;
 		for i in (0..=8).rev() {
 			let entry = fishes.entry(i).or_insert(0);
-			let value = entry.clone();
+			let value = *entry;
 			*entry = last;
 			if i == 0 {
 				let six = fishes.entry(6).or_insert(0);
@@ -69,7 +67,7 @@ pub fn part2(input: &[u32]) -> u64 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "3,4,3,1,2";
+	const EXAMPLE: &str = "3,4,3,1,2";
 
 	#[test]
 	fn example_part1() {

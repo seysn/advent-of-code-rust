@@ -4,7 +4,7 @@ pub fn parse_input(input: &str) -> Vec<i32> {
 
 pub fn part1(input: &[i32]) -> i32 {
 	for i in input.iter() {
-		if let Some(_) = input.iter().position(|&x| x == (2020 - i)) {
+		if input.iter().any(|&x| x == (2020 - i)) {
 			return (2020 - i) * i;
 		}
 	}
@@ -16,7 +16,7 @@ pub fn part2(input: &[i32]) -> i32 {
 		let candidates: Vec<&i32> = input.iter().filter(|&x| x < &(2020 - i) && x != i).collect();
 
 		for &j in candidates.iter() {
-			if let Some(_) = input.iter().position(|&x| x == (2020 - i - j)) {
+			if input.iter().any(|&x| x == (2020 - i - j)) {
 				return (2020 - i - j) * j * i;
 			}
 		}
@@ -28,7 +28,7 @@ pub fn part2(input: &[i32]) -> i32 {
 mod tests {
 	use super::*;
 
-	const EXAMPLE: &'static str = "1721
+	const EXAMPLE: &str = "1721
 979
 366
 299
