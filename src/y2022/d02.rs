@@ -22,7 +22,6 @@ enum Win {
 	Draw,
 }
 
-#[derive(Debug)]
 pub struct Round {
 	me: Shape,
 	noob: Shape,
@@ -45,7 +44,7 @@ impl Round {
 				Shape::Rock => Win::Noob,
 				Shape::Paper => Win::Me,
 				Shape::Scissors => Win::Draw,
-			}
+			},
 		}
 	}
 
@@ -65,16 +64,19 @@ impl Round {
 				Shape::Rock => Shape::Paper,
 				Shape::Paper => Shape::Scissors,
 				Shape::Scissors => Shape::Rock,
-			}
+			},
 		}
 	}
 }
 
 pub fn parse_input(input: &str) -> Vec<Round> {
-	input.lines().map(|l| Round {
-		me: Shape::from_char(l.chars().nth(2).unwrap()),
-		noob: Shape::from_char(l.chars().next().unwrap()),
-	}).collect()
+	input
+		.lines()
+		.map(|l| Round {
+			me: Shape::from_char(l.chars().nth(2).unwrap()),
+			noob: Shape::from_char(l.chars().next().unwrap()),
+		})
+		.collect()
 }
 
 pub fn part1(input: &[Round]) -> i32 {
