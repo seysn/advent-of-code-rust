@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Clone, Copy)]
 pub enum Shape {
 	Rock = 1,
 	Paper = 2,
