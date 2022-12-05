@@ -25,7 +25,7 @@ fn send_get(session: &str, url: &str) -> reqwest::Result<String> {
 	// Fetch response
 	let res = client.execute(client.get(url).build()?)?;
 
-	Ok(res.text()?.trim().to_string())
+	Ok(res.text()?.trim_end().to_string())
 }
 
 pub fn extract_integer<T: std::str::FromStr>(s: &str) -> Result<T, &str> {
@@ -62,7 +62,10 @@ pub fn get_input(year: u16, day: u8) -> String {
 	let p = Path::new(&filename);
 
 	if p.is_file() {
-		fs::read_to_string(filename).expect("Unable to read input file").trim().to_string()
+		fs::read_to_string(filename)
+			.expect("Unable to read input file")
+			.trim_end()
+			.to_string()
 	} else {
 		// Building session cookie string
 		let mut session = String::from("session=");
