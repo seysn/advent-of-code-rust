@@ -51,7 +51,7 @@ pub fn get_session() -> String {
 		let session = read_input("session: ").expect("Unable to read input");
 
 		// Write session in file to avoid asking user everytime
-		fs::write(session_file, &session.trim()).unwrap();
+		fs::write(session_file, session.trim()).unwrap();
 
 		session.trim().to_string()
 	}
