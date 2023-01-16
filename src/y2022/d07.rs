@@ -109,7 +109,7 @@ fn dir_size(dir: &Rc<RefCell<Item>>, dir_sums: &mut BTreeMap<String, u64>, paren
 			};
 		}
 
-		dir_sums.insert(format!("{}.{}", parent_name, name.to_string()), sum);
+		dir_sums.insert(format!("{parent_name}.{name}"), sum);
 		return sum;
 	}
 	unreachable!()
