@@ -28,7 +28,7 @@ macro_rules! run_day {
 		let part2_time = before.elapsed();
 
 		println!(
-			"{}: part1 = {:?} ({:.2?}), part2 = {:?} ({:.2?})",
+			"{}: part1 = {} ({:.2?}), part2 = {} ({:.2?})",
 			stringify!($day),
 			part1_out,
 			part1_time,
