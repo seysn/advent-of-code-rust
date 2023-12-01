@@ -1,5 +1,5 @@
 pub fn parse_input(input: &str) -> Vec<String> {
-	vec![0]
+	vec![]
 }
 
 pub fn part1(input: &[String]) -> usize {
