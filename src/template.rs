@@ -1,12 +1,12 @@
-pub fn parse_input(input: &str) -> Vec<i32> {
+pub fn parse_input(input: &str) -> Vec<String> {
 	vec![0]
 }
 
-pub fn part1(input: &[i32]) -> i32 {
+pub fn part1(input: &[String]) -> usize {
 	0
 }
 
-pub fn part2(input: &[i32]) -> i32 {
+pub fn part2(input: &[String]) -> usize {
 	0
 }
 
