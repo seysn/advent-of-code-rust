@@ -4,6 +4,7 @@ mod y2015;
 mod y2020;
 mod y2021;
 mod y2022;
+mod y2023;
 
 #[macro_export]
 macro_rules! run_day {
@@ -44,6 +45,7 @@ pub fn run(year: u16, day: u8) {
 		2020 => y2020::run(day),
 		2021 => y2021::run(day),
 		2022 => y2022::run(day),
+		2023 => y2023::run(day),
 		_ => unimplemented!(),
 	}
 }
@@ -54,12 +56,13 @@ pub fn run_all_year(year: u16) {
 		2020 => y2020::run_all(),
 		2021 => y2021::run_all(),
 		2022 => y2022::run_all(),
+		2023 => y2023::run_all(),
 		_ => unimplemented!(),
 	}
 }
 
 pub fn run_all() {
-	for year in [2015, 2020, 2021, 2022] {
+	for year in [2015, 2020, 2021, 2022, 2023] {
 		println!("YEAR {}:", year);
 		run_all_year(year);
 	}

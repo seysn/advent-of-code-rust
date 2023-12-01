@@ -20,7 +20,7 @@ fn main() {
 		// Running all days of a year
 		(Some(y), _) => run_all_year(y),
 		// Running a specific day of last year
-		(_, Some(d)) => run(2022, d),
+		(_, Some(d)) => run(2023, d),
 		// Running all days of all years
 		(_, _) => run_all(),
 	}
