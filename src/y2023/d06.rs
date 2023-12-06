@@ -30,7 +30,10 @@ fn inequality(time: u64, distance: u64, x: u64) -> bool {
 }
 
 fn n_ways(time: u64, distance: u64) -> usize {
-	(0..=time).filter(|x| inequality(time, distance, *x)).count()
+	let start = (0..=time).find(|x| inequality(time, distance, *x)).unwrap();
+	let end = (0..=time).rev().find(|x| inequality(time, distance, *x)).unwrap();
+
+	(end - start + 1) as usize
 }
 
 pub fn part1(input: &Races) -> usize {
