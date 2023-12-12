@@ -75,7 +75,7 @@ pub fn parse_input(input: &str) -> Grid {
 		.filter(|c| !c.is_whitespace())
 		.map(|c| match c {
 			c if c.is_numeric() => Element::Number(c),
-			c if c == '.' => Element::None,
+			'.' => Element::None,
 			c => Element::Symbol(c),
 		})
 		.collect();

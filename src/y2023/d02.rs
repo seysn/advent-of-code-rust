@@ -2,7 +2,7 @@
 struct Set {
 	red: u32,
 	green: u32,
-	blue: u32,	
+	blue: u32,
 }
 
 pub struct Game {
@@ -11,51 +11,58 @@ pub struct Game {
 }
 
 pub fn parse_input(input: &str) -> Vec<Game> {
-	input.lines().enumerate().map(|(i, l)| {
-		let st = l.find(':').unwrap();
-		let mut sets = Vec::new();
-		for s in l[st+2..].split("; ") {
-			let mut set = Set::default();
-			for b in s.split(", ") {
-				let (n, color) = b.split_once(' ').unwrap();
-				match color {
-					"red" => set.red = n.parse().unwrap(),
-					"blue" => set.blue = n.parse().unwrap(),
-					"green" => set.green = n.parse().unwrap(),
-					_ => unreachable!(),
+	input
+		.lines()
+		.enumerate()
+		.map(|(i, l)| {
+			let st = l.find(':').unwrap();
+			let mut sets = Vec::new();
+			for s in l[st + 2..].split("; ") {
+				let mut set = Set::default();
+				for b in s.split(", ") {
+					let (n, color) = b.split_once(' ').unwrap();
+					match color {
+						"red" => set.red = n.parse().unwrap(),
+						"blue" => set.blue = n.parse().unwrap(),
+						"green" => set.green = n.parse().unwrap(),
+						_ => unreachable!(),
+					}
 				}
+				sets.push(set);
 			}
-			sets.push(set);
-		}
 
-		Game { id: i + 1, sets }
-	}).collect()
+			Game { id: i + 1, sets }
+		})
+		.collect()
 }
 
 pub fn part1(input: &[Game]) -> usize {
-	input.iter().filter(|game| {
-		!game.sets.iter().any(|set| {
-			set.red > 12 || set.green > 13 || set.blue > 14
-		})
-	}).map(|game| game.id).sum()
+	input
+		.iter()
+		.filter(|game| !game.sets.iter().any(|set| set.red > 12 || set.green > 13 || set.blue > 14))
+		.map(|game| game.id)
+		.sum()
 }
 
 pub fn part2(input: &[Game]) -> u32 {
-	input.iter().map(|game| {
-		let mut min_set = Set::default();
-		for set in game.sets.iter() {
-			if set.blue > min_set.blue {
-				min_set.blue = set.blue;
+	input
+		.iter()
+		.map(|game| {
+			let mut min_set = Set::default();
+			for set in game.sets.iter() {
+				if set.blue > min_set.blue {
+					min_set.blue = set.blue;
+				}
+				if set.red > min_set.red {
+					min_set.red = set.red;
+				}
+				if set.green > min_set.green {
+					min_set.green = set.green;
+				}
 			}
-			if set.red > min_set.red {
-				min_set.red = set.red;
-			}
-			if set.green > min_set.green {
-				min_set.green = set.green;
-			}
-		}
-		min_set.blue * min_set.red * min_set.green
-	}).sum()
+			min_set.blue * min_set.red * min_set.green
+		})
+		.sum()
 }
 
 #[cfg(test)]
