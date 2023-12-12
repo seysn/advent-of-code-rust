@@ -1,11 +1,14 @@
+#[allow(unused_variables)]
 pub fn parse_input(input: &str) -> Vec<String> {
 	vec![]
 }
 
+#[allow(unused_variables)]
 pub fn part1(input: &[String]) -> usize {
 	0
 }
 
+#[allow(unused_variables)]
 pub fn part2(input: &[String]) -> usize {
 	0
 }
