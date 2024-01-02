@@ -65,41 +65,47 @@ fn walk(input: &Documents, start: &str) -> (usize, String) {
 	unreachable!()
 }
 
-#[allow(unused)]
+fn gcd_of_two_numbers(a: usize, b: usize) -> usize {
+	if b == 0 {
+		return a;
+	}
+	gcd_of_two_numbers(b, a % b)
+}
+
+fn lcm(nums: &[usize]) -> usize {
+	if nums.len() == 1 {
+		return nums[0];
+	}
+	let a = nums[0];
+	let b = lcm(&nums[1..]);
+	a * b / gcd_of_two_numbers(a, b)
+}
+
+fn find_cycle(map: &HashMap<&String, (usize, String)>, start: &str) -> usize {
+	let mut visited: HashMap<String, usize> = HashMap::new();
+	let mut current = start.to_string();
+	let mut steps = 0;
+
+	while !visited.contains_key(&current) {
+		let (s, k) = map.get(&current).unwrap();
+		steps += s;
+		current = k.clone();
+		visited.insert(k.clone(), steps);
+	}
+
+	*visited.get(&current).unwrap()
+}
+
 pub fn part2(input: &Documents) -> usize {
-	// TODO: Optimize
+	let mut map: HashMap<&String, (usize, String)> = HashMap::new();
+	for node in input.maps.keys() {
+		map.insert(node, walk(input, node));
+	}
 
-	// let mut map: HashMap<&String, (usize, String)> = HashMap::new();
-	// for node in input.maps.keys() {
-	// 	map.insert(node, walk(input, node));
-	// }
+	let nodes: Vec<String> = input.maps.keys().filter(|k| k.ends_with('A')).map(|k| k.to_string()).collect();
+	let cycles: Vec<usize> = nodes.iter().map(|n| find_cycle(&map, n)).collect();
 
-	// let mut nodes: Vec<(usize, String)> = input
-	// 	.maps
-	// 	.keys()
-	// 	.filter(|k| k.ends_with('A'))
-	// 	.map(|k| (map.get(k).unwrap().0, map.get(k).unwrap().1.to_string()))
-	// 	.collect();
-	// let mut max = nodes.iter().map(|(a, _)| *a).max().unwrap();
-
-	// let mut i = 0;
-	// while i < nodes.len() {
-	// 	while nodes[i].0 < max {
-	// 		let res = map.get(&nodes[i].1).unwrap();
-	// 		nodes[i] = (nodes[i].0 + res.0, res.1.to_string());
-	// 	}
-
-	// 	if nodes[i].0 > max {
-	// 		max = nodes[i].0;
-	// 		i = 0
-	// 	} else {
-	// 		i += 1;
-	// 	}
-	// }
-
-	// max
-
-	6
+	lcm(&cycles)
 }
 
 #[cfg(test)]
