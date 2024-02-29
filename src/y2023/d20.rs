@@ -278,7 +278,6 @@ pub fn part1(input: &HashMap<String, Module>) -> usize {
 	let mut high_pulses = 0;
 
 	for _ in 0..1000 {
-		// println!("=== Button pushed ===");
 		let (l, h) = push_button(input, &mut pulses, &mut state);
 		low_pulses += l;
 		high_pulses += h;
@@ -330,7 +329,6 @@ pub fn part2(input: &HashMap<String, Module>) -> usize {
 			}
 		}
 	}
-	dbg!(&results);
 
 	let values: Vec<usize> = results.values().copied().collect();
 	lcm(&values)
