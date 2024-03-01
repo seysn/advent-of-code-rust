@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
+use crate::collections::{Grid, Point};
+
 #[derive(Clone, Copy)]
-enum Tile {
+pub enum Tile {
 	NS,
 	WE,
 	NE,
@@ -10,12 +12,6 @@ enum Tile {
 	SE,
 	G,
 	S,
-}
-
-pub struct Grid {
-	tiles: Vec<Tile>,
-	width: usize,
-	height: usize,
 }
 
 impl From<char> for Tile {
@@ -49,24 +45,20 @@ impl Tile {
 	}
 }
 
-impl Grid {
-	fn get(&self, x: usize, y: usize) -> Tile {
-		self.tiles[self.width * y + x]
-	}
-
+impl Grid<Tile> {
 	fn find_start(&self) -> (usize, usize) {
-		let idx = self.tiles.iter().position(|tile| matches!(tile, Tile::S)).unwrap();
+		let idx = self.cells.iter().position(|tile| matches!(tile, Tile::S)).unwrap();
 		(idx % self.width, idx / self.width)
 	}
 
 	fn available_moves(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
 		let mut moves = Vec::new();
-		for (i, j) in self.get(x, y).moves() {
+		for (i, j) in self.get(Point::new(x as i32, y as i32)).moves() {
 			let (xx, yy) = (x as i32 + i, y as i32 + j);
 			if xx < 0 || yy < 0 || xx >= self.width as i32 || yy >= self.height as i32 {
 				continue;
 			}
-			if !self.get(xx as usize, yy as usize).moves().contains(&(-i, -j)) {
+			if !self.get(Point::new(xx, yy)).moves().contains(&(-i, -j)) {
 				continue;
 			}
 			moves.push((xx as usize, yy as usize))
@@ -75,15 +67,11 @@ impl Grid {
 	}
 }
 
-pub fn parse_input(input: &str) -> Grid {
-	let tiles: Vec<Tile> = input.chars().filter(|c| !c.is_whitespace()).map(Tile::from).collect();
-	let width = input.lines().next().unwrap().len();
-	let height = tiles.len() / width;
-
-	Grid { tiles, width, height }
+pub fn parse_input(input: &str) -> Grid<Tile> {
+	Grid::new(input)
 }
 
-pub fn part1(input: &Grid) -> usize {
+pub fn part1(input: &Grid<Tile>) -> usize {
 	let mut frontier = Vec::new();
 	let mut came_from: HashMap<(usize, usize), (usize, usize)> = HashMap::new();
 	let mut cost: HashMap<(usize, usize), usize> = HashMap::new();
@@ -122,7 +110,7 @@ fn inside(x: i32, y: i32, polygon: &[(i32, i32)]) -> bool {
 	inside
 }
 
-pub fn part2(input: &Grid) -> usize {
+pub fn part2(input: &Grid<Tile>) -> usize {
 	let start = input.find_start();
 	let mut current = start;
 	let mut previous = start;
@@ -141,7 +129,10 @@ pub fn part2(input: &Grid) -> usize {
 		}
 
 		tiles.push(next);
-		if matches!(input.get(next.0, next.1), Tile::NE | Tile::NW | Tile::SE | Tile::SW) {
+		if matches!(
+			input.get(Point::new(next.0 as i32, next.1 as i32)),
+			Tile::NE | Tile::NW | Tile::SE | Tile::SW
+		) {
 			corners.push((next.0 as i32, next.1 as i32));
 		}
 

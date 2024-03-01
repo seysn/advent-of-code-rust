@@ -1,32 +1,47 @@
-#[derive(Clone)]
-pub struct Grid {
-	trees: Vec<u32>,
-	width: usize,
-	height: usize,
+use std::ops::{Deref, DerefMut};
+
+use crate::collections::{Grid, Point};
+
+#[derive(Clone, Copy)]
+pub struct Number(u32);
+
+impl From<char> for Number {
+	fn from(value: char) -> Self {
+		Number(value.to_digit(10).unwrap())
+	}
 }
 
-impl Grid {
-	fn get(&self, x: usize, y: usize) -> u32 {
-		self.trees[self.width * y + x]
+impl Deref for Number {
+	type Target = u32;
+	fn deref(&self) -> &Self::Target {
+		&self.0
 	}
+}
 
+impl DerefMut for Number {
+	fn deref_mut(&mut self) -> &mut Self::Target {
+		&mut self.0
+	}
+}
+
+impl Grid<Number> {
 	fn set(&mut self, x: usize, y: usize, value: u32) {
-		self.trees[self.width * y + x] = value;
+		self.cells[self.width * y + x] = Number(value);
 	}
 
 	fn inc(&mut self, x: usize, y: usize) {
-		self.trees[self.width * y + x] += 1;
+		*self.cells[self.width * y + x] += 1;
 	}
 
 	fn scenic_score(&self, x: usize, y: usize) -> u32 {
-		let value = self.get(x, y);
+		let value = self.get(Point::new(x as i32, y as i32));
 		let mut res = 1;
 		let mut cpt = 0;
 
 		// Up
 		for j in (0..y).rev() {
 			cpt += 1;
-			if self.get(x, j) >= value {
+			if *self.get(Point::new(x as i32, j as i32)) >= *value {
 				break;
 			}
 		}
@@ -36,7 +51,7 @@ impl Grid {
 		// Down
 		for j in y + 1..self.height {
 			cpt += 1;
-			if self.get(x, j) >= value {
+			if *self.get(Point::new(x as i32, j as i32)) >= *value {
 				break;
 			}
 		}
@@ -46,7 +61,7 @@ impl Grid {
 		// Left
 		for i in (0..x).rev() {
 			cpt += 1;
-			if self.get(i, y) >= value {
+			if *self.get(Point::new(i as i32, y as i32)) >= *value {
 				break;
 			}
 		}
@@ -56,7 +71,7 @@ impl Grid {
 		// Right
 		for i in x + 1..self.width {
 			cpt += 1;
-			if self.get(i, y) >= value {
+			if *self.get(Point::new(i as i32, y as i32)) >= *value {
 				break;
 			}
 		}
@@ -66,17 +81,13 @@ impl Grid {
 	}
 }
 
-pub fn parse_input(input: &str) -> Grid {
-	let trees: Vec<u32> = input.chars().filter(|c| c.is_numeric()).map(|c| c as u32 - 48).collect();
-	let width = input.lines().next().unwrap().len();
-	let height = trees.len() / width;
-
-	Grid { trees, width, height }
+pub fn parse_input(input: &str) -> Grid<Number> {
+	Grid::new(input)
 }
 
-pub fn part1(input: &Grid) -> usize {
+pub fn part1(input: &Grid<Number>) -> usize {
 	let mut visibles = Grid {
-		trees: vec![0; input.width * input.height],
+		cells: vec![Number(0); input.width * input.height],
 		width: input.width,
 		height: input.height,
 	};
@@ -96,20 +107,20 @@ pub fn part1(input: &Grid) -> usize {
 	let mut max;
 	for x in 1..input.width - 1 {
 		// From top to bottom
-		max = input.get(x, 0);
+		max = input.get(Point::new(x as i32, 0));
 		for y in 1..input.height {
-			let tree = input.get(x, y);
-			if tree > max {
+			let tree = input.get(Point::new(x as i32, y as i32));
+			if *tree > *max {
 				visibles.inc(x, y);
 				max = tree;
 			}
 		}
 
 		// From bottom to top
-		max = input.get(x, input.height - 1);
+		max = input.get(Point::new(x as i32, input.height as i32 - 1));
 		for y in (0..input.height - 1).rev() {
-			let tree = input.get(x, y);
-			if tree > max {
+			let tree = input.get(Point::new(x as i32, y as i32));
+			if *tree > *max {
 				visibles.inc(x, y);
 				max = tree;
 			}
@@ -118,32 +129,32 @@ pub fn part1(input: &Grid) -> usize {
 
 	for y in 1..input.height - 1 {
 		// From left to right
-		max = input.get(0, y);
+		max = input.get(Point::new(0, y as i32));
 		for x in 1..input.width {
-			let tree = input.get(x, y);
-			if tree > max {
+			let tree = input.get(Point::new(x as i32, y as i32));
+			if *tree > *max {
 				visibles.inc(x, y);
 				max = tree;
 			}
 		}
 
 		// From right to left
-		max = input.get(input.width - 1, y);
+		max = input.get(Point::new(input.width as i32 - 1, y as i32));
 		for x in (0..input.width - 1).rev() {
-			let tree = input.get(x, y);
-			if tree > max {
+			let tree = input.get(Point::new(x as i32, y as i32));
+			if *tree > *max {
 				visibles.inc(x, y);
 				max = tree;
 			}
 		}
 	}
 
-	visibles.trees.iter().filter(|&&x| x > 0).count()
+	visibles.cells.iter().filter(|&&x| *x > 0).count()
 }
 
-pub fn part2(input: &Grid) -> u32 {
+pub fn part2(input: &Grid<Number>) -> u32 {
 	let mut visibles = Grid {
-		trees: vec![1; input.width * input.height],
+		cells: vec![Number(1); input.width * input.height],
 		width: input.width,
 		height: input.height,
 	};
@@ -154,7 +165,7 @@ pub fn part2(input: &Grid) -> u32 {
 		}
 	}
 
-	*visibles.trees.iter().max().unwrap()
+	visibles.cells.iter().map(|&n| *n).max().unwrap()
 }
 
 #[cfg(test)]
@@ -170,10 +181,10 @@ mod tests {
 	#[test]
 	fn example_get() {
 		let grid = parse_input(EXAMPLE);
-		assert_eq!(grid.get(0, 0), 3);
-		assert_eq!(grid.get(1, 1), 5);
-		assert_eq!(grid.get(3, 0), 7);
-		assert_eq!(grid.get(0, 2), 6);
+		assert_eq!(*grid.get(Point::new(0, 0)), 3);
+		assert_eq!(*grid.get(Point::new(1, 1)), 5);
+		assert_eq!(*grid.get(Point::new(3, 0)), 7);
+		assert_eq!(*grid.get(Point::new(0, 2)), 6);
 	}
 
 	#[test]

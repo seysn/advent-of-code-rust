@@ -1,21 +1,9 @@
 use std::{
 	collections::{BinaryHeap, HashMap},
-	ops::Add,
+	ops::Deref,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-enum Direction {
-	North,
-	South,
-	West,
-	East,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-struct Point {
-	x: usize,
-	y: usize,
-}
+use crate::collections::{Direction, Grid, Point};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Node {
@@ -30,47 +18,19 @@ struct State {
 	node: Node,
 }
 
-pub struct Grid {
-	cells: Vec<u32>,
-	width: usize,
-	height: usize,
-}
+#[derive(Clone, Copy)]
+pub struct Number(u32);
 
-impl Direction {
-	fn reverse(&self) -> Direction {
-		match self {
-			Direction::North => Direction::South,
-			Direction::South => Direction::North,
-			Direction::West => Direction::East,
-			Direction::East => Direction::West,
-		}
-	}
-
-	fn delta(&self) -> (i32, i32) {
-		match self {
-			Direction::North => (0, -1),
-			Direction::South => (0, 1),
-			Direction::West => (-1, 0),
-			Direction::East => (1, 0),
-		}
+impl From<char> for Number {
+	fn from(value: char) -> Self {
+		Number(value.to_digit(10).unwrap())
 	}
 }
 
-impl Point {
-	fn new(x: usize, y: usize) -> Self {
-		Self { x, y }
-	}
-}
-
-impl Add<Direction> for Point {
-	type Output = Point;
-
-	fn add(self, direction: Direction) -> Self::Output {
-		let (x, y) = direction.delta();
-		Point {
-			x: (self.x as i32 + x) as usize,
-			y: (self.y as i32 + y) as usize,
-		}
+impl Deref for Number {
+	type Target = u32;
+	fn deref(&self) -> &Self::Target {
+		&self.0
 	}
 }
 
@@ -87,17 +47,13 @@ impl Ord for State {
 	}
 }
 
-impl Grid {
-	fn get(&self, point: Point) -> u32 {
-		self.cells[self.width * point.y + point.x]
-	}
-
+impl Grid<Number> {
 	fn out_of_bounds(&self, point: Point, direction: Direction) -> bool {
 		match direction {
 			Direction::North => point.y == 0,
-			Direction::South => point.y == self.height - 1,
+			Direction::South => point.y == self.height as i32 - 1,
 			Direction::West => point.x == 0,
-			Direction::East => point.x == self.width - 1,
+			Direction::East => point.x == self.width as i32 - 1,
 		}
 	}
 
@@ -129,19 +85,11 @@ impl Grid {
 	}
 }
 
-pub fn parse_input(input: &str) -> Grid {
-	let cells: Vec<u32> = input
-		.chars()
-		.filter(|c| !c.is_whitespace())
-		.map(|c| c.to_digit(10).unwrap())
-		.collect();
-	let width = input.lines().next().unwrap().len();
-	let height = cells.len() / width;
-
-	Grid { cells, width, height }
+pub fn parse_input(input: &str) -> Grid<Number> {
+	Grid::new(input)
 }
 
-fn search(input: &Grid, min_consecutive: usize, max_consecutive: usize) -> u32 {
+fn search(input: &Grid<Number>, min_consecutive: usize, max_consecutive: usize) -> u32 {
 	let start = Point::new(0, 0);
 	let mut frontier: BinaryHeap<State> = BinaryHeap::new();
 	frontier.push(State {
@@ -155,14 +103,14 @@ fn search(input: &Grid, min_consecutive: usize, max_consecutive: usize) -> u32 {
 
 	let mut distances: HashMap<Node, u32> = HashMap::new();
 
-	let goal = Point::new(input.width - 1, input.height - 1);
+	let goal = Point::new(input.width as i32 - 1, input.height as i32 - 1);
 	while let Some(current) = frontier.pop() {
 		if current.node.point == goal {
 			return current.cost;
 		}
 
 		for next in input.neighbors(&current.node, min_consecutive, max_consecutive) {
-			let new_cost = current.cost + input.get(next.point);
+			let new_cost = current.cost + *input.get(next.point);
 			if let Some(&best) = distances.get(&next) {
 				if new_cost >= best {
 					continue;
@@ -180,11 +128,11 @@ fn search(input: &Grid, min_consecutive: usize, max_consecutive: usize) -> u32 {
 	0
 }
 
-pub fn part1(input: &Grid) -> u32 {
+pub fn part1(input: &Grid<Number>) -> u32 {
 	search(input, 1, 3)
 }
 
-pub fn part2(input: &Grid) -> u32 {
+pub fn part2(input: &Grid<Number>) -> u32 {
 	search(input, 4, 10)
 }
 

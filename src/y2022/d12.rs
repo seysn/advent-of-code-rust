@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
+use crate::collections::{Grid, Point};
+
 #[derive(Debug, Copy, Clone)]
-enum Cell {
+pub enum Cell {
 	Start,
 	End,
 	Square(usize),
@@ -15,9 +17,11 @@ impl Cell {
 			Cell::Square(i) => *i,
 		}
 	}
+}
 
-	fn from(c: char) -> Self {
-		match c {
+impl From<char> for Cell {
+	fn from(value: char) -> Self {
+		match value {
 			'S' => Self::Start,
 			'E' => Self::End,
 			c => Self::Square(c as usize - 97),
@@ -25,18 +29,7 @@ impl Cell {
 	}
 }
 
-#[derive(Debug)]
-pub struct Grid {
-	cells: Vec<Cell>,
-	width: usize,
-	height: usize,
-}
-
-impl Grid {
-	fn get(&self, x: usize, y: usize) -> Cell {
-		self.cells[self.width * y + x]
-	}
-
+impl Grid<Cell> {
 	fn start(&self) -> (usize, usize) {
 		for (i, cell) in self.cells.iter().enumerate() {
 			if let Cell::Start = cell {
@@ -66,7 +59,7 @@ impl Grid {
 				continue;
 			}
 
-			if self.get(x, y).elevation() + 1 >= self.get(xx as usize, yy as usize).elevation() {
+			if self.get(Point::new(x as i32, y as i32)).elevation() + 1 >= self.get(Point::new(xx, yy)).elevation() {
 				res.push((i, j));
 			}
 		}
@@ -141,19 +134,15 @@ impl Grid {
 	}
 }
 
-pub fn parse_input(input: &str) -> Grid {
-	let cells: Vec<Cell> = input.chars().filter(|c| c.is_alphabetic()).map(Cell::from).collect();
-	let width = input.lines().next().unwrap().len();
-	let height = cells.len() / width;
-
-	Grid { cells, width, height }
+pub fn parse_input(input: &str) -> Grid<Cell> {
+	Grid::new(input)
 }
 
-pub fn part1(input: &Grid) -> usize {
+pub fn part1(input: &Grid<Cell>) -> usize {
 	input.shortest_path(input.start(), input.end())
 }
 
-pub fn part2(input: &Grid) -> usize {
+pub fn part2(input: &Grid<Cell>) -> usize {
 	let reversed: Vec<Cell> = input
 		.cells
 		.iter()

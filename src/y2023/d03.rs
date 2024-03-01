@@ -1,23 +1,25 @@
 use std::collections::HashMap;
 
+use crate::collections::{Grid, Point};
+
 #[derive(Clone, Copy)]
-enum Element {
+pub enum Element {
 	Number(char),
 	Symbol(char),
 	None,
 }
 
-pub struct Grid {
-	elements: Vec<Element>,
-	width: usize,
-	height: usize,
+impl From<char> for Element {
+	fn from(value: char) -> Self {
+		match value {
+			c if c.is_numeric() => Element::Number(c),
+			'.' => Element::None,
+			c => Element::Symbol(c),
+		}
+	}
 }
 
-impl Grid {
-	fn get(&self, x: usize, y: usize) -> Element {
-		self.elements[self.width * y + x]
-	}
-
+impl Grid<Element> {
 	fn has_symbol_around(&self, x: usize, y: usize) -> bool {
 		for (i, j) in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 0), (0, 1), (1, -1), (1, 0), (1, 1)] {
 			let (xx, yy) = (x as i32 + i, y as i32 + j);
@@ -25,7 +27,7 @@ impl Grid {
 				continue;
 			}
 
-			if let Element::Symbol(_) = self.get(xx as usize, yy as usize) {
+			if let Element::Symbol(_) = self.get(Point::new(xx, yy)) {
 				return true;
 			}
 		}
@@ -50,7 +52,7 @@ impl Grid {
 				continue;
 			}
 
-			if let Element::Symbol('*') = self.get(xx as usize, yy as usize) {
+			if let Element::Symbol('*') = self.get(Point::new(xx, yy)) {
 				return Some((xx as usize, yy as usize));
 			}
 		}
@@ -69,29 +71,17 @@ impl Grid {
 	}
 }
 
-pub fn parse_input(input: &str) -> Grid {
-	let elements: Vec<Element> = input
-		.chars()
-		.filter(|c| !c.is_whitespace())
-		.map(|c| match c {
-			c if c.is_numeric() => Element::Number(c),
-			'.' => Element::None,
-			c => Element::Symbol(c),
-		})
-		.collect();
-	let width = input.lines().next().unwrap().len();
-	let height = elements.len() / width;
-
-	Grid { elements, width, height }
+pub fn parse_input(input: &str) -> Grid<Element> {
+	Grid::new(input)
 }
 
-pub fn part1(input: &Grid) -> u64 {
+pub fn part1(input: &Grid<Element>) -> u64 {
 	let mut res = 0;
 	for line in 0..input.height {
 		let mut column = 0;
 		let mut tmp = String::new();
 		while column < input.width {
-			match input.get(column, line) {
+			match input.get(Point::new(column as i32, line as i32)) {
 				Element::Number(n) => tmp.push(n),
 				Element::Symbol(_) => {
 					if !tmp.is_empty() {
@@ -129,14 +119,14 @@ pub fn part1(input: &Grid) -> u64 {
 	res
 }
 
-pub fn part2(input: &Grid) -> u64 {
+pub fn part2(input: &Grid<Element>) -> u64 {
 	let mut gears: HashMap<(usize, usize), Vec<u64>> = HashMap::new();
 
 	for line in 0..input.height {
 		let mut column = 0;
 		let mut tmp = String::new();
 		while column < input.width {
-			match input.get(column, line) {
+			match input.get(Point::new(column as i32, line as i32)) {
 				Element::Number(n) => tmp.push(n),
 				Element::Symbol(_) | Element::None => {
 					if !tmp.is_empty() {

@@ -1,11 +1,12 @@
 use std::{
 	collections::{HashMap, HashSet},
 	iter,
-	ops::{Add, AddAssign},
 };
 
+use crate::collections::{Direction, Grid, Point};
+
 #[derive(Clone, Copy)]
-enum Tile {
+pub enum Tile {
 	Space,
 	MirrorFront,
 	MirrorBack,
@@ -14,29 +15,9 @@ enum Tile {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
-enum Direction {
-	North,
-	South,
-	West,
-	East,
-}
-
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
-struct Position {
-	x: usize,
-	y: usize,
-}
-
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 struct Start {
-	position: Position,
+	point: Point,
 	direction: Direction,
-}
-
-pub struct Grid {
-	tiles: Vec<Tile>,
-	width: usize,
-	height: usize,
 }
 
 impl From<char> for Tile {
@@ -51,61 +32,26 @@ impl From<char> for Tile {
 	}
 }
 
-impl Direction {
-	fn delta(&self) -> (i32, i32) {
-		match self {
-			Direction::North => (0, -1),
-			Direction::South => (0, 1),
-			Direction::West => (-1, 0),
-			Direction::East => (1, 0),
-		}
-	}
-}
-
-impl Add<&Direction> for Position {
-	type Output = Self;
-
-	fn add(self, rhs: &Direction) -> Self::Output {
-		let (x, y) = rhs.delta();
-		Position {
-			x: (self.x as i32 + x) as usize,
-			y: (self.y as i32 + y) as usize,
-		}
-	}
-}
-
-impl AddAssign<&Direction> for Position {
-	fn add_assign(&mut self, rhs: &Direction) {
-		let (x, y) = rhs.delta();
-		self.x = (self.x as i32 + x) as usize;
-		self.y = (self.y as i32 + y) as usize;
-	}
-}
-
-impl Grid {
-	fn get(&self, position: &Position) -> Tile {
-		self.tiles[self.width * position.y + position.x]
-	}
-
-	fn out_of_bounds(&self, position: &Position, direction: &Direction) -> bool {
+impl Grid<Tile> {
+	fn out_of_bounds(&self, point: &Point, direction: &Direction) -> bool {
 		match direction {
-			Direction::North => position.y == 0,
-			Direction::South => position.y == self.height - 1,
-			Direction::West => position.x == 0,
-			Direction::East => position.x == self.width - 1,
+			Direction::North => point.y == 0,
+			Direction::South => point.y == self.height as i32 - 1,
+			Direction::West => point.x == 0,
+			Direction::East => point.x == self.width as i32 - 1,
 		}
 	}
 
 	fn split(
 		&self,
-		position: Position,
+		point: Point,
 		direction: &Direction,
-		cache: &mut HashMap<Start, HashSet<Position>>,
-		splitter_used: &mut Vec<Position>,
-	) -> HashSet<Position> {
-		let new_pos = position + direction;
+		cache: &mut HashMap<Start, HashSet<Point>>,
+		splitter_used: &mut Vec<Point>,
+	) -> HashSet<Point> {
+		let new_pos = point + *direction;
 		let new_start = Start {
-			position: new_pos,
+			point: new_pos,
 			direction: *direction,
 		};
 
@@ -118,18 +64,13 @@ impl Grid {
 		}
 	}
 
-	fn energize(
-		&self,
-		start: Start,
-		cache: &mut HashMap<Start, HashSet<Position>>,
-		splitter_used: &mut Vec<Position>,
-	) -> HashSet<Position> {
+	fn energize(&self, start: Start, cache: &mut HashMap<Start, HashSet<Point>>, splitter_used: &mut Vec<Point>) -> HashSet<Point> {
 		let mut res = HashSet::new();
-		let mut position = start.position;
+		let mut point = start.point;
 		let mut direction = &start.direction;
 		loop {
-			res.insert(position);
-			match (self.get(&position), direction) {
+			res.insert(point);
+			match (self.get(point), direction) {
 				(Tile::MirrorFront, Direction::North) => direction = &Direction::East,
 				(Tile::MirrorFront, Direction::South) => direction = &Direction::West,
 				(Tile::MirrorFront, Direction::West) => direction = &Direction::South,
@@ -139,60 +80,56 @@ impl Grid {
 				(Tile::MirrorBack, Direction::West) => direction = &Direction::North,
 				(Tile::MirrorBack, Direction::East) => direction = &Direction::South,
 				(Tile::SplitterH, Direction::North | Direction::South) => {
-					if splitter_used.contains(&position) {
+					if splitter_used.contains(&point) {
 						break;
 					}
-					splitter_used.push(position);
+					splitter_used.push(point);
 
-					if !self.out_of_bounds(&position, &Direction::West) {
-						res.extend(self.split(position, &Direction::West, cache, splitter_used));
+					if !self.out_of_bounds(&point, &Direction::West) {
+						res.extend(self.split(point, &Direction::West, cache, splitter_used));
 					}
-					if !self.out_of_bounds(&position, &Direction::East) {
-						res.extend(self.split(position, &Direction::East, cache, splitter_used));
+					if !self.out_of_bounds(&point, &Direction::East) {
+						res.extend(self.split(point, &Direction::East, cache, splitter_used));
 					}
 					break;
 				}
 				(Tile::SplitterV, Direction::West | Direction::East) => {
-					if splitter_used.contains(&position) {
+					if splitter_used.contains(&point) {
 						break;
 					}
-					splitter_used.push(position);
+					splitter_used.push(point);
 
-					if !self.out_of_bounds(&position, &Direction::North) {
-						res.extend(self.split(position, &Direction::North, cache, splitter_used));
+					if !self.out_of_bounds(&point, &Direction::North) {
+						res.extend(self.split(point, &Direction::North, cache, splitter_used));
 					}
-					if !self.out_of_bounds(&position, &Direction::South) {
-						res.extend(self.split(position, &Direction::South, cache, splitter_used));
+					if !self.out_of_bounds(&point, &Direction::South) {
+						res.extend(self.split(point, &Direction::South, cache, splitter_used));
 					}
 					break;
 				}
 				(_, _) => {}
 			}
 
-			if self.out_of_bounds(&position, direction) {
+			if self.out_of_bounds(&point, direction) {
 				break;
 			}
-			position += direction;
+			point += direction;
 		}
 
 		res
 	}
 }
 
-pub fn parse_input(input: &str) -> Grid {
-	let tiles: Vec<Tile> = input.chars().filter(|c| !c.is_whitespace()).map(Tile::from).collect();
-	let width = input.lines().next().unwrap().len();
-	let height = tiles.len() / width;
-
-	Grid { tiles, width, height }
+pub fn parse_input(input: &str) -> Grid<Tile> {
+	Grid::new(input)
 }
 
-pub fn part1(input: &Grid) -> usize {
+pub fn part1(input: &Grid<Tile>) -> usize {
 	let mut cache = HashMap::new();
 	input
 		.energize(
 			Start {
-				position: Position { x: 0, y: 0 },
+				point: Point { x: 0, y: 0 },
 				direction: Direction::East,
 			},
 			&mut cache,
@@ -201,7 +138,7 @@ pub fn part1(input: &Grid) -> usize {
 		.len()
 }
 
-fn get_max<I, J>(input: &Grid, xs: I, ys: J, direction: Direction, cache: &mut HashMap<Start, HashSet<Position>>) -> usize
+fn get_max<I, J>(input: &Grid<Tile>, xs: I, ys: J, direction: Direction, cache: &mut HashMap<Start, HashSet<Point>>) -> usize
 where
 	I: Iterator<Item = usize>,
 	J: Iterator<Item = usize>,
@@ -212,7 +149,7 @@ where
 			input
 				.energize(
 					Start {
-						position: Position { x, y },
+						point: Point::new(x as i32, y as i32),
 						direction,
 					},
 					cache,
@@ -224,7 +161,7 @@ where
 	res
 }
 
-pub fn part2(input: &Grid) -> usize {
+pub fn part2(input: &Grid<Tile>) -> usize {
 	let mut cache = HashMap::new();
 	let mut res = 0;
 

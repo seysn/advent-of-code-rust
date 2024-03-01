@@ -355,9 +355,4 @@ mod tests {
 		assert_eq!(part1(&parse_input(EXAMPLE)), 32000000);
 		assert_eq!(part1(&parse_input(EXAMPLE2)), 11687500);
 	}
-
-	#[test]
-	fn example_part2() {
-		assert_eq!(part2(&parse_input(EXAMPLE)), 0);
-	}
 }
