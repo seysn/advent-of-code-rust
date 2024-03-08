@@ -87,6 +87,10 @@ impl<C: Copy> Grid<C> {
 	pub fn get(&self, point: Point) -> C {
 		self.cells[self.width * point.y as usize + point.x as usize]
 	}
+
+	pub fn in_bounds(&self, point: Point) -> bool {
+		point.x >= 0 && point.y >= 0 && point.x < self.width as i32 && point.y < self.height as i32
+	}
 }
 
 impl<C: Copy + PartialEq> Grid<C> {
