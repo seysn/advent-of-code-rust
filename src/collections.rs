@@ -8,13 +8,36 @@ pub struct Point {
 
 impl Point {
 	pub fn new(x: i32, y: i32) -> Self {
-		Point { x, y }
+		Self { x, y }
 	}
 }
 
 impl From<(i32, i32)> for Point {
 	fn from(value: (i32, i32)) -> Self {
-		Point { x: value.0, y: value.1 }
+		Self { x: value.0, y: value.1 }
+	}
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Point3D {
+	pub x: i32,
+	pub y: i32,
+	pub z: i32,
+}
+
+impl Point3D {
+	pub fn new(x: i32, y: i32, z: i32) -> Self {
+		Self { x, y, z }
+	}
+}
+
+impl From<(i32, i32, i32)> for Point3D {
+	fn from(value: (i32, i32, i32)) -> Self {
+		Self {
+			x: value.0,
+			y: value.1,
+			z: value.2,
+		}
 	}
 }
 
