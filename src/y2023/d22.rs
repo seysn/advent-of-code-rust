@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::collections::Point3D;
 
@@ -105,32 +105,6 @@ pub fn part1(input: &Tower) -> usize {
 	tower.bricks.len() - needed.len()
 }
 
-#[derive(Clone)]
-struct State {
-	brick: Brick,
-	disintegrated: HashSet<Brick>,
-}
-
-fn count_supporting(state: &mut State, supports: &HashMap<Brick, HashSet<Brick>>, supporting: &HashMap<Brick, HashSet<Brick>>) -> usize {
-	let mut todo = HashSet::new();
-	for b in supporting.get(&state.brick).unwrap() {
-		let s = supports.get(b).unwrap();
-		if s.is_subset(&state.disintegrated) {
-			state.disintegrated.insert(b.clone());
-			todo.insert(b.clone());
-		}
-	}
-
-	for brick in todo {
-		let mut new_state = state.clone();
-		new_state.brick = brick;
-		count_supporting(&mut new_state, supports, supporting);
-		state.disintegrated.extend(new_state.disintegrated);
-	}
-
-	state.disintegrated.len() - 1
-}
-
 pub fn part2(input: &Tower) -> usize {
 	let tower = input.fall();
 
@@ -145,14 +119,27 @@ pub fn part2(input: &Tower) -> usize {
 
 	let mut res = 0;
 	for brick in &tower.bricks {
-		res += count_supporting(
-			&mut State {
-				brick: brick.clone(),
-				disintegrated: HashSet::from_iter([brick.clone()]),
-			},
-			&supports,
-			&supporting,
-		);
+		let mut queue = VecDeque::new();
+		let mut disintegrated = HashSet::new();
+		queue.push_back(brick.clone());
+		disintegrated.insert(brick.clone());
+
+		while let Some(b) = queue.pop_front() {
+			for bb in supporting
+				.get(&b)
+				.unwrap()
+				.difference(&disintegrated)
+				.cloned()
+				.collect::<HashSet<_>>()
+			{
+				if supports.get(&bb).unwrap().is_subset(&disintegrated) {
+					queue.push_back(bb.clone());
+					disintegrated.insert(bb.clone());
+				}
+			}
+		}
+
+		res += disintegrated.len() - 1;
 	}
 
 	res
