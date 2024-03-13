@@ -49,6 +49,18 @@ pub enum Direction {
 	East,
 }
 
+impl From<char> for Direction {
+	fn from(value: char) -> Self {
+		match value {
+			'v' => Self::South,
+			'^' => Self::North,
+			'<' => Self::West,
+			'>' => Self::East,
+			_ => unimplemented!(),
+		}
+	}
+}
+
 impl Direction {
 	pub fn reverse(&self) -> Direction {
 		match self {
