@@ -3,6 +3,7 @@ mod utils;
 
 mod y2015;
 mod y2016;
+mod y2019;
 mod y2020;
 mod y2021;
 mod y2022;
@@ -45,6 +46,7 @@ pub fn run(year: u16, day: u8) {
 	match year {
 		2015 => y2015::run(day),
 		2016 => y2016::run(day),
+		2019 => y2019::run(day),
 		2020 => y2020::run(day),
 		2021 => y2021::run(day),
 		2022 => y2022::run(day),
@@ -57,6 +59,7 @@ pub fn run_all_year(year: u16) {
 	match year {
 		2015 => y2015::run_all(),
 		2016 => y2016::run_all(),
+		2019 => y2019::run_all(),
 		2020 => y2020::run_all(),
 		2021 => y2021::run_all(),
 		2022 => y2022::run_all(),
@@ -66,7 +69,7 @@ pub fn run_all_year(year: u16) {
 }
 
 pub fn run_all() {
-	for year in [2015, 2016, 2020, 2021, 2022, 2023] {
+	for year in [2015, 2016, 2019, 2020, 2021, 2022, 2023] {
 		println!("YEAR {}:", year);
 		run_all_year(year);
 	}
