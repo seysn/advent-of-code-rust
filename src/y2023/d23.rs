@@ -108,7 +108,7 @@ impl Graph {
 impl Grid<Tile> {
 	fn find_path(&self, y: usize) -> Point {
 		for x in 0..self.width {
-			let point = Point::new(x as i32, y as i32);
+			let point = Point(x as i32, y as i32);
 			if matches!(self.get(point), Tile::Path) {
 				return point;
 			}
@@ -127,7 +127,7 @@ impl Grid<Tile> {
 
 		for x in 0..self.width {
 			for y in 0..self.height {
-				let point = Point::new(x as i32, y as i32);
+				let point = Point(x as i32, y as i32);
 				if matches!(self.get(point), Tile::Path) && self.neighbors(point, false).count() > 2 {
 					res.push(point);
 				}

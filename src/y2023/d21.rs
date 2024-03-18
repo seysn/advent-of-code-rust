@@ -74,21 +74,21 @@ pub fn part2(input: &Grid<Cell>) -> usize {
 	// Number of plots for each type of grid
 	let grid_odd = input.steps(start, grid_size * 2 + 1);
 	let grid_even = input.steps(start, grid_size * 2);
-	let grid_top = input.steps(&Point::new(start.x, grid_size as i32 - 1), grid_size - 1);
-	let grid_bot = input.steps(&Point::new(start.x, 0), grid_size - 1);
-	let grid_left = input.steps(&Point::new(grid_size as i32 - 1, start.y), grid_size - 1);
-	let grid_right = input.steps(&Point::new(0, start.y), grid_size - 1);
-	let grid_small_top_right = input.steps(&Point::new(grid_size as i32 - 1, 0), grid_size.div_euclid(2) - 1);
-	let grid_small_top_left = input.steps(&Point::new(grid_size as i32 - 1, grid_size as i32 - 1), grid_size.div_euclid(2) - 1);
-	let grid_small_bot_right = input.steps(&Point::new(0, 0), grid_size.div_euclid(2) - 1);
-	let grid_small_bot_left = input.steps(&Point::new(0, grid_size as i32 - 1), grid_size.div_euclid(2) - 1);
-	let grid_large_top_right = input.steps(&Point::new(grid_size as i32 - 1, 0), (grid_size * 3).div_euclid(2) - 1);
+	let grid_top = input.steps(&Point(start.0, grid_size as i32 - 1), grid_size - 1);
+	let grid_bot = input.steps(&Point(start.0, 0), grid_size - 1);
+	let grid_left = input.steps(&Point(grid_size as i32 - 1, start.1), grid_size - 1);
+	let grid_right = input.steps(&Point(0, start.1), grid_size - 1);
+	let grid_small_top_right = input.steps(&Point(grid_size as i32 - 1, 0), grid_size.div_euclid(2) - 1);
+	let grid_small_top_left = input.steps(&Point(grid_size as i32 - 1, grid_size as i32 - 1), grid_size.div_euclid(2) - 1);
+	let grid_small_bot_right = input.steps(&Point(0, 0), grid_size.div_euclid(2) - 1);
+	let grid_small_bot_left = input.steps(&Point(0, grid_size as i32 - 1), grid_size.div_euclid(2) - 1);
+	let grid_large_top_right = input.steps(&Point(grid_size as i32 - 1, 0), (grid_size * 3).div_euclid(2) - 1);
 	let grid_large_top_left = input.steps(
-		&Point::new(grid_size as i32 - 1, grid_size as i32 - 1),
+		&Point(grid_size as i32 - 1, grid_size as i32 - 1),
 		(grid_size * 3).div_euclid(2) - 1,
 	);
-	let grid_large_bot_right = input.steps(&Point::new(0, 0), (grid_size * 3).div_euclid(2) - 1);
-	let grid_large_bot_left = input.steps(&Point::new(0, grid_size as i32 - 1), (grid_size * 3).div_euclid(2) - 1);
+	let grid_large_bot_right = input.steps(&Point(0, 0), (grid_size * 3).div_euclid(2) - 1);
+	let grid_large_bot_left = input.steps(&Point(0, grid_size as i32 - 1), (grid_size * 3).div_euclid(2) - 1);
 
 	(n_grid_odd * grid_odd)
 		+ (n_grid_even * grid_even)
@@ -116,11 +116,11 @@ mod tests {
 	#[test]
 	fn test_neighbors() {
 		let grid = parse_input(EXAMPLE);
-		let n = grid.neighbors(Point::new(7, 0));
-		assert!(n.contains(&Point::new(6, 0)));
-		assert!(n.contains(&Point::new(8, 0)));
-		assert!(!n.contains(&Point::new(7, 1)));
-		assert!(!n.contains(&Point::new(7, -1)));
+		let n = grid.neighbors(Point(7, 0));
+		assert!(n.contains(&Point(6, 0)));
+		assert!(n.contains(&Point(8, 0)));
+		assert!(!n.contains(&Point(7, 1)));
+		assert!(!n.contains(&Point(7, -1)));
 	}
 
 	#[test]

@@ -15,7 +15,7 @@ struct Brick {
 impl Tower {
 	fn sort_by_height(&self) -> Vec<Brick> {
 		let mut res = self.bricks.clone();
-		res.sort_by(|a, b| a.start_cube.z.cmp(&b.start_cube.z));
+		res.sort_by(|a, b| a.start_cube.2.cmp(&b.start_cube.2));
 		res
 	}
 
@@ -23,12 +23,12 @@ impl Tower {
 		let mut bricks: Vec<Brick> = Vec::new();
 
 		for b in &self.sort_by_height() {
-			for dz in 0..b.start_cube.z {
+			for dz in 0..b.start_cube.2 {
 				let new_brick = Brick {
-					start_cube: Point3D::new(b.start_cube.x, b.start_cube.y, b.start_cube.z - dz),
-					end_cube: Point3D::new(b.end_cube.x, b.end_cube.y, b.end_cube.z - dz),
+					start_cube: Point3D(b.start_cube.0, b.start_cube.1, b.start_cube.2 - dz),
+					end_cube: Point3D(b.end_cube.0, b.end_cube.1, b.end_cube.2 - dz),
 				};
-				if b.start_cube.z - dz == 1 || bricks.iter().any(|bb| bb.is_supporting(&new_brick)) {
+				if b.start_cube.2 - dz == 1 || bricks.iter().any(|bb| bb.is_supporting(&new_brick)) {
 					bricks.push(new_brick);
 					break;
 				}
@@ -41,14 +41,14 @@ impl Tower {
 
 impl Brick {
 	fn is_supporting(&self, other: &Self) -> bool {
-		if self.end_cube.z != other.start_cube.z - 1 {
+		if self.end_cube.2 != other.start_cube.2 - 1 {
 			return false;
 		}
 
-		if self.start_cube.x < other.end_cube.x + 1
-			&& self.end_cube.x + 1 > other.start_cube.x
-			&& self.start_cube.y < other.end_cube.y + 1
-			&& self.end_cube.y + 1 > other.start_cube.y
+		if self.start_cube.0 < other.end_cube.0 + 1
+			&& self.end_cube.0 + 1 > other.start_cube.0
+			&& self.start_cube.1 < other.end_cube.1 + 1
+			&& self.end_cube.1 + 1 > other.start_cube.1
 		{
 			return true;
 		}
@@ -68,7 +68,7 @@ impl From<&str> for Brick {
 			.collect::<Vec<i32>>()
 			.try_into()
 			.unwrap();
-		let start_cube = Point3D::new(x, y, z);
+		let start_cube = Point3D(x, y, z);
 
 		let [x, y, z] = snd
 			.split(',')
@@ -77,9 +77,9 @@ impl From<&str> for Brick {
 			.collect::<Vec<i32>>()
 			.try_into()
 			.unwrap();
-		let end_cube = Point3D::new(x, y, z);
+		let end_cube = Point3D(x, y, z);
 
-		if start_cube.x != end_cube.x && start_cube.y != end_cube.y {
+		if start_cube.0 != end_cube.0 && start_cube.1 != end_cube.1 {
 			panic!("no");
 		}
 

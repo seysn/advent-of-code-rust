@@ -27,7 +27,7 @@ impl Grid<Element> {
 				continue;
 			}
 
-			if let Element::Symbol(_) = self.get(Point::new(xx, yy)) {
+			if let Element::Symbol(_) = self.get(Point(xx, yy)) {
 				return true;
 			}
 		}
@@ -52,7 +52,7 @@ impl Grid<Element> {
 				continue;
 			}
 
-			if let Element::Symbol('*') = self.get(Point::new(xx, yy)) {
+			if let Element::Symbol('*') = self.get(Point(xx, yy)) {
 				return Some((xx as usize, yy as usize));
 			}
 		}
@@ -81,7 +81,7 @@ pub fn part1(input: &Grid<Element>) -> u64 {
 		let mut column = 0;
 		let mut tmp = String::new();
 		while column < input.width {
-			match input.get(Point::new(column as i32, line as i32)) {
+			match input.get(Point(column as i32, line as i32)) {
 				Element::Number(n) => tmp.push(n),
 				Element::Symbol(_) => {
 					if !tmp.is_empty() {
@@ -126,7 +126,7 @@ pub fn part2(input: &Grid<Element>) -> u64 {
 		let mut column = 0;
 		let mut tmp = String::new();
 		while column < input.width {
-			match input.get(Point::new(column as i32, line as i32)) {
+			match input.get(Point(column as i32, line as i32)) {
 				Element::Number(n) => tmp.push(n),
 				Element::Symbol(_) | Element::None => {
 					if !tmp.is_empty() {

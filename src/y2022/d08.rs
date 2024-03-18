@@ -34,14 +34,14 @@ impl Grid<Number> {
 	}
 
 	fn scenic_score(&self, x: usize, y: usize) -> u32 {
-		let value = self.get(Point::new(x as i32, y as i32));
+		let value = self.get(Point(x as i32, y as i32));
 		let mut res = 1;
 		let mut cpt = 0;
 
 		// Up
 		for j in (0..y).rev() {
 			cpt += 1;
-			if *self.get(Point::new(x as i32, j as i32)) >= *value {
+			if *self.get(Point(x as i32, j as i32)) >= *value {
 				break;
 			}
 		}
@@ -51,7 +51,7 @@ impl Grid<Number> {
 		// Down
 		for j in y + 1..self.height {
 			cpt += 1;
-			if *self.get(Point::new(x as i32, j as i32)) >= *value {
+			if *self.get(Point(x as i32, j as i32)) >= *value {
 				break;
 			}
 		}
@@ -61,7 +61,7 @@ impl Grid<Number> {
 		// Left
 		for i in (0..x).rev() {
 			cpt += 1;
-			if *self.get(Point::new(i as i32, y as i32)) >= *value {
+			if *self.get(Point(i as i32, y as i32)) >= *value {
 				break;
 			}
 		}
@@ -71,7 +71,7 @@ impl Grid<Number> {
 		// Right
 		for i in x + 1..self.width {
 			cpt += 1;
-			if *self.get(Point::new(i as i32, y as i32)) >= *value {
+			if *self.get(Point(i as i32, y as i32)) >= *value {
 				break;
 			}
 		}
@@ -107,9 +107,9 @@ pub fn part1(input: &Grid<Number>) -> usize {
 	let mut max;
 	for x in 1..input.width - 1 {
 		// From top to bottom
-		max = input.get(Point::new(x as i32, 0));
+		max = input.get(Point(x as i32, 0));
 		for y in 1..input.height {
-			let tree = input.get(Point::new(x as i32, y as i32));
+			let tree = input.get(Point(x as i32, y as i32));
 			if *tree > *max {
 				visibles.inc(x, y);
 				max = tree;
@@ -117,9 +117,9 @@ pub fn part1(input: &Grid<Number>) -> usize {
 		}
 
 		// From bottom to top
-		max = input.get(Point::new(x as i32, input.height as i32 - 1));
+		max = input.get(Point(x as i32, input.height as i32 - 1));
 		for y in (0..input.height - 1).rev() {
-			let tree = input.get(Point::new(x as i32, y as i32));
+			let tree = input.get(Point(x as i32, y as i32));
 			if *tree > *max {
 				visibles.inc(x, y);
 				max = tree;
@@ -129,9 +129,9 @@ pub fn part1(input: &Grid<Number>) -> usize {
 
 	for y in 1..input.height - 1 {
 		// From left to right
-		max = input.get(Point::new(0, y as i32));
+		max = input.get(Point(0, y as i32));
 		for x in 1..input.width {
-			let tree = input.get(Point::new(x as i32, y as i32));
+			let tree = input.get(Point(x as i32, y as i32));
 			if *tree > *max {
 				visibles.inc(x, y);
 				max = tree;
@@ -139,9 +139,9 @@ pub fn part1(input: &Grid<Number>) -> usize {
 		}
 
 		// From right to left
-		max = input.get(Point::new(input.width as i32 - 1, y as i32));
+		max = input.get(Point(input.width as i32 - 1, y as i32));
 		for x in (0..input.width - 1).rev() {
-			let tree = input.get(Point::new(x as i32, y as i32));
+			let tree = input.get(Point(x as i32, y as i32));
 			if *tree > *max {
 				visibles.inc(x, y);
 				max = tree;
@@ -181,10 +181,10 @@ mod tests {
 	#[test]
 	fn example_get() {
 		let grid = parse_input(EXAMPLE);
-		assert_eq!(*grid.get(Point::new(0, 0)), 3);
-		assert_eq!(*grid.get(Point::new(1, 1)), 5);
-		assert_eq!(*grid.get(Point::new(3, 0)), 7);
-		assert_eq!(*grid.get(Point::new(0, 2)), 6);
+		assert_eq!(*grid.get(Point(0, 0)), 3);
+		assert_eq!(*grid.get(Point(1, 1)), 5);
+		assert_eq!(*grid.get(Point(3, 0)), 7);
+		assert_eq!(*grid.get(Point(0, 2)), 6);
 	}
 
 	#[test]

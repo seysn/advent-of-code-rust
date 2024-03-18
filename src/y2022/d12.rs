@@ -59,7 +59,7 @@ impl Grid<Cell> {
 				continue;
 			}
 
-			if self.get(Point::new(x as i32, y as i32)).elevation() + 1 >= self.get(Point::new(xx, yy)).elevation() {
+			if self.get(Point(x as i32, y as i32)).elevation() + 1 >= self.get(Point(xx, yy)).elevation() {
 				res.push((i, j));
 			}
 		}

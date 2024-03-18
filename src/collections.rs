@@ -1,45 +1,10 @@
 use std::ops::{Add, AddAssign};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Point {
-	pub x: i32,
-	pub y: i32,
-}
-
-impl Point {
-	pub fn new(x: i32, y: i32) -> Self {
-		Self { x, y }
-	}
-}
-
-impl From<(i32, i32)> for Point {
-	fn from(value: (i32, i32)) -> Self {
-		Self { x: value.0, y: value.1 }
-	}
-}
+pub struct Point(pub i32, pub i32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Point3D {
-	pub x: i32,
-	pub y: i32,
-	pub z: i32,
-}
-
-impl Point3D {
-	pub fn new(x: i32, y: i32, z: i32) -> Self {
-		Self { x, y, z }
-	}
-}
-
-impl From<(i32, i32, i32)> for Point3D {
-	fn from(value: (i32, i32, i32)) -> Self {
-		Self {
-			x: value.0,
-			y: value.1,
-			z: value.2,
-		}
-	}
-}
+pub struct Point3D(pub i32, pub i32, pub i32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Direction {
@@ -86,18 +51,15 @@ impl Add<Direction> for Point {
 
 	fn add(self, direction: Direction) -> Self::Output {
 		let (x, y) = direction.delta();
-		Point {
-			x: self.x + x,
-			y: self.y + y,
-		}
+		Point(self.0 + x, self.1 + y)
 	}
 }
 
 impl AddAssign<&Direction> for Point {
 	fn add_assign(&mut self, rhs: &Direction) {
 		let (x, y) = rhs.delta();
-		self.x += x;
-		self.y += y;
+		self.0 += x;
+		self.1 += y;
 	}
 }
 
@@ -120,11 +82,11 @@ impl<C: From<char>> Grid<C> {
 
 impl<C: Copy> Grid<C> {
 	pub fn get(&self, point: Point) -> C {
-		self.cells[self.width * point.y as usize + point.x as usize]
+		self.cells[self.width * point.1 as usize + point.0 as usize]
 	}
 
 	pub fn in_bounds(&self, point: Point) -> bool {
-		point.x >= 0 && point.y >= 0 && point.x < self.width as i32 && point.y < self.height as i32
+		point.0 >= 0 && point.1 >= 0 && point.0 < self.width as i32 && point.1 < self.height as i32
 	}
 }
 
@@ -133,7 +95,7 @@ impl<C: Copy + PartialEq> Grid<C> {
 		let mut res = Vec::new();
 		for y in 0..self.height {
 			for x in 0..self.width {
-				let point = Point::new(x as i32, y as i32);
+				let point = Point(x as i32, y as i32);
 				if self.get(point) == cell {
 					res.push(point);
 				}
@@ -173,7 +135,7 @@ mod tests {
 
 		assert_eq!(grid.height, 2);
 		assert_eq!(grid.width, 3);
-		assert_eq!(grid.get(Point::new(1, 1)), Cell::On);
+		assert_eq!(grid.get(Point(1, 1)), Cell::On);
 	}
 
 	#[test]
@@ -199,6 +161,6 @@ mod tests {
 
 		assert_eq!(grid.height, 2);
 		assert_eq!(grid.width, 3);
-		assert_eq!(*grid.get(Point::new(1, 1)), 5);
+		assert_eq!(*grid.get(Point(1, 1)), 5);
 	}
 }

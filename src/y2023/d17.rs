@@ -50,10 +50,10 @@ impl Ord for State {
 impl Grid<Number> {
 	fn out_of_bounds(&self, point: Point, direction: Direction) -> bool {
 		match direction {
-			Direction::North => point.y == 0,
-			Direction::South => point.y == self.height as i32 - 1,
-			Direction::West => point.x == 0,
-			Direction::East => point.x == self.width as i32 - 1,
+			Direction::North => point.1 == 0,
+			Direction::South => point.1 == self.height as i32 - 1,
+			Direction::West => point.0 == 0,
+			Direction::East => point.0 == self.width as i32 - 1,
 		}
 	}
 
@@ -90,7 +90,7 @@ pub fn parse_input(input: &str) -> Grid<Number> {
 }
 
 fn search(input: &Grid<Number>, min_consecutive: usize, max_consecutive: usize) -> u32 {
-	let start = Point::new(0, 0);
+	let start = Point(0, 0);
 	let mut frontier: BinaryHeap<State> = BinaryHeap::new();
 	frontier.push(State {
 		cost: 0,
@@ -103,7 +103,7 @@ fn search(input: &Grid<Number>, min_consecutive: usize, max_consecutive: usize) 
 
 	let mut distances: HashMap<Node, u32> = HashMap::new();
 
-	let goal = Point::new(input.width as i32 - 1, input.height as i32 - 1);
+	let goal = Point(input.width as i32 - 1, input.height as i32 - 1);
 	while let Some(current) = frontier.pop() {
 		if current.node.point == goal {
 			return current.cost;

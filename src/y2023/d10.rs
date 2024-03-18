@@ -53,12 +53,12 @@ impl Grid<Tile> {
 
 	fn available_moves(&self, x: usize, y: usize) -> Vec<(usize, usize)> {
 		let mut moves = Vec::new();
-		for (i, j) in self.get(Point::new(x as i32, y as i32)).moves() {
+		for (i, j) in self.get(Point(x as i32, y as i32)).moves() {
 			let (xx, yy) = (x as i32 + i, y as i32 + j);
 			if xx < 0 || yy < 0 || xx >= self.width as i32 || yy >= self.height as i32 {
 				continue;
 			}
-			if !self.get(Point::new(xx, yy)).moves().contains(&(-i, -j)) {
+			if !self.get(Point(xx, yy)).moves().contains(&(-i, -j)) {
 				continue;
 			}
 			moves.push((xx as usize, yy as usize))
@@ -130,7 +130,7 @@ pub fn part2(input: &Grid<Tile>) -> usize {
 
 		tiles.push(next);
 		if matches!(
-			input.get(Point::new(next.0 as i32, next.1 as i32)),
+			input.get(Point(next.0 as i32, next.1 as i32)),
 			Tile::NE | Tile::NW | Tile::SE | Tile::SW
 		) {
 			corners.push((next.0 as i32, next.1 as i32));

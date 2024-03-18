@@ -35,10 +35,10 @@ impl From<char> for Tile {
 impl Grid<Tile> {
 	fn out_of_bounds(&self, point: &Point, direction: &Direction) -> bool {
 		match direction {
-			Direction::North => point.y == 0,
-			Direction::South => point.y == self.height as i32 - 1,
-			Direction::West => point.x == 0,
-			Direction::East => point.x == self.width as i32 - 1,
+			Direction::North => point.1 == 0,
+			Direction::South => point.1 == self.height as i32 - 1,
+			Direction::West => point.0 == 0,
+			Direction::East => point.0 == self.width as i32 - 1,
 		}
 	}
 
@@ -129,7 +129,7 @@ pub fn part1(input: &Grid<Tile>) -> usize {
 	input
 		.energize(
 			Start {
-				point: Point { x: 0, y: 0 },
+				point: Point(0, 0),
 				direction: Direction::East,
 			},
 			&mut cache,
@@ -149,7 +149,7 @@ where
 			input
 				.energize(
 					Start {
-						point: Point::new(x as i32, y as i32),
+						point: Point(x as i32, y as i32),
 						direction,
 					},
 					cache,
