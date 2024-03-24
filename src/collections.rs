@@ -17,10 +17,10 @@ pub enum Direction {
 impl From<char> for Direction {
 	fn from(value: char) -> Self {
 		match value {
-			'v' => Self::South,
-			'^' => Self::North,
-			'<' => Self::West,
-			'>' => Self::East,
+			'v' | 'D' | 'S' => Self::South,
+			'^' | 'U' | 'N' => Self::North,
+			'<' | 'L' | 'W' => Self::West,
+			'>' | 'R' | 'E' => Self::East,
 			_ => unimplemented!(),
 		}
 	}
