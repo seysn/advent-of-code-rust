@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+
+import re
+from pathlib import Path
+import datetime
+
+class GeneratorException(Exception):
+    pass
+
+DAY_TEMPLATE = """#[allow(unused_variables)]
+pub fn parse_input(input: &str) -> Vec<String> {
+	vec![]
+}
+
+#[allow(unused_variables)]
+pub fn part1(input: &[String]) -> usize {
+	0
+}
+
+#[allow(unused_variables)]
+pub fn part2(input: &[String]) -> usize {
+	0
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	const EXAMPLE: &str = "";
+
+	#[test]
+	fn example_part1() {
+		assert_eq!(part1(&parse_input(EXAMPLE)), 0);
+	}
+
+	#[test]
+	fn example_part2() {
+		assert_eq!(part2(&parse_input(EXAMPLE)), 0);
+	}
+}
+"""
+
+
+def generate_mod_file(year: int, max_day: int, extra_mods: list) -> str:
+    mods = ""
+    if extra_mods:
+        mods += "\n".join(extra_mods)
+        mods += "\n\n"
+    mods += "\n".join(f"mod d{i:02};" for i in range(1, max_day + 1))
+    run_braces = "\n".join(
+        f"\t\t{i} => run_day!(y{year:02}, d{i:02}),"
+        for i in range(1, max_day + 1)
+    )
+
+
+    return """use crate::run_day;
+
+{}
+
+pub fn run(day: u8) {{
+	match day {{
+{}
+		_ => unimplemented!(),
+	}}
+}}
+
+pub fn run_all() {{
+	(1..={}).for_each(run)
+}}
+""".format(mods, run_braces, max_day)
+
+def get_next_day(year_folder: Path) -> int:
+    next_day = len(list(year_folder.glob("d*.rs"))) + 1
+    if next_day > 25:
+        raise GeneratorException("Year is done")
+    return next_day
+
+DAY_MOD_RE = re.compile(r"mod d\d{2};")
+
+def is_extra_mod(line: str) -> bool:
+    if not line.startswith("mod "):
+        return False
+    if DAY_MOD_RE.match(line):
+        return False
+    return True
+
+
+def generate(year: int):
+    year_folder = Path(f"./src/y{year}")
+    if not year_folder.exists():
+        year_folder.mkdir(parents=True)
+        next_day = 1
+    else:
+        next_day = get_next_day(year_folder)
+        
+    day_file = year_folder / f"d{next_day:02}.rs"
+    day_file.write_text(DAY_TEMPLATE)
+    mod_file = year_folder / "mod.rs"
+    if mod_file.exists():
+        extra_mods = [line for line in mod_file.read_text().splitlines() if is_extra_mod(line)]
+    else:
+        extra_mods = []
+    mod_file.write_text(generate_mod_file(year, next_day, extra_mods))
+
+def get_last_year() -> int:
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+    release = datetime.datetime(year=now.year, month=12, day=1, hour=5, tzinfo=datetime.timezone.utc)
+    if now < release:
+        return now.year - 1
+    else:
+        return now.year
+
+
+if __name__ == "__main__":
+    import sys
+    
+    if len(sys.argv) != 2:
+        print(f"usage: {sys.argv[0]} <year>")
+        sys.exit(1)
+    
+    try:
+        year = int(sys.argv[1])
+    except ValueError:
+        print(f"error: {sys.argv[1]} is not an int")
+        sys.exit(1)
+
+    min_year = 2015
+    max_year = get_last_year()
+    if not (min_year <= year <= max_year):
+        print(f"error: year must be between {min_year} and {max_year}")
+        sys.exit(1)
+
+    try:
+        generate(year)
+    except GeneratorException as e:
+        print(f"error: {e}")
+        sys.exit(1)
