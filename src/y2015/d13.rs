@@ -48,7 +48,7 @@ fn happiness(order: &[&String], rules: &HashMap<(String, String), i32>) -> i32 {
 
 		// Right
 		res += if idx == order.len() - 1 {
-			rules.get(&(attendee.to_string(), order.get(0).unwrap().to_string())).unwrap()
+			rules.get(&(attendee.to_string(), order.first().unwrap().to_string())).unwrap()
 		} else {
 			rules.get(&(attendee.to_string(), order.get(idx + 1).unwrap().to_string())).unwrap()
 		};

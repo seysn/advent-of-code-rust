@@ -78,7 +78,7 @@ pub fn parse_input(content: &str) -> Bingo {
 
 	let mut boards: Vec<Board> = Vec::new();
 	let mut buffer: Vec<Vec<u32>> = Vec::new();
-	for l in lines.into_iter().skip(1) {
+	for l in lines.skip(1) {
 		if l.is_empty() {
 			boards.push(Board::new(buffer));
 			buffer = Vec::new();
