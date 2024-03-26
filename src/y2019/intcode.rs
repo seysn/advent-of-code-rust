@@ -1,28 +1,30 @@
-type ProgramArray = [u32; 1000];
+const MAX_PROGRAM_SIZE: usize = 1000;
 
 pub struct Program {
-	pub rom: ProgramArray,
+	pub rom: Vec<u32>,
 }
 
 #[derive(Clone)]
 pub struct Interpreter {
-	pub ram: ProgramArray,
+	pub ram: [u32; MAX_PROGRAM_SIZE],
 	pc: usize,
 }
 
 impl From<&str> for Program {
 	fn from(value: &str) -> Self {
-		let mut rom = [0; 1000];
-		for (i, op) in value.split(',').map(|opcode| opcode.parse().unwrap()).enumerate() {
-			rom[i] = op;
+		Self {
+			rom: value.split(',').map(|opcode| opcode.parse().unwrap()).collect(),
 		}
-		Self { rom }
 	}
 }
 
 impl From<&Program> for Interpreter {
 	fn from(value: &Program) -> Self {
-		Self { ram: value.rom, pc: 0 }
+		let mut ram = [0; MAX_PROGRAM_SIZE];
+		for (i, op) in value.rom.iter().enumerate() {
+			ram[i] = *op;
+		}
+		Self { ram, pc: 0 }
 	}
 }
 
