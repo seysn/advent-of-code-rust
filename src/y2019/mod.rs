@@ -7,6 +7,7 @@ mod d02;
 mod d03;
 mod d04;
 mod d05;
+mod d06;
 
 pub fn run(day: u8) {
 	match day {
@@ -15,10 +16,11 @@ pub fn run(day: u8) {
 		3 => run_day!(y2019, d03),
 		4 => run_day!(y2019, d04),
 		5 => run_day!(y2019, d05),
+		6 => run_day!(y2019, d06),
 		_ => unimplemented!(),
 	}
 }
 
 pub fn run_all() {
-	(1..=5).for_each(run)
+	(1..=6).for_each(run)
 }
