@@ -1,10 +1,10 @@
-use crate::y2019::intcode::{Interpreter, Program};
+use super::intcode::{Interpreter, Program};
 
 pub fn parse_input(input: &str) -> Program {
 	Program::from(input)
 }
 
-pub fn part1(input: &Program) -> u32 {
+pub fn part1(input: &Program) -> i32 {
 	let mut interpreter = Interpreter::from(input);
 	interpreter.ram[1] = 12;
 	interpreter.ram[2] = 2;
@@ -12,7 +12,7 @@ pub fn part1(input: &Program) -> u32 {
 	interpreter.ram[0]
 }
 
-pub fn part2(input: &Program) -> u32 {
+pub fn part2(input: &Program) -> i32 {
 	for noun in 0..100 {
 		for verb in 0..100 {
 			let mut interpreter = Interpreter::from(input);
