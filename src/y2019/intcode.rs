@@ -1,3 +1,5 @@
+use std::sync::mpsc::{channel, Receiver, Sender};
+
 const MAX_PROGRAM_SIZE: usize = 1000;
 const MAX_PARAMETERS: usize = 5;
 
@@ -38,13 +40,14 @@ impl From<i32> for Instruction {
 	}
 }
 
-#[derive(Clone)]
 pub struct Interpreter {
 	pub ram: [i32; MAX_PROGRAM_SIZE],
 	pc: usize,
 
-	inputs: Vec<i32>,
-	outputs: Vec<i32>,
+	inputs: Option<Receiver<i32>>,
+	outputs: Option<Sender<i32>>,
+
+	pub last_output: Option<i32>,
 }
 
 impl From<&str> for Program {
@@ -65,14 +68,44 @@ impl From<&Program> for Interpreter {
 		Self {
 			ram,
 			pc: 0,
-			inputs: Vec::new(),
-			outputs: Vec::new(),
+			inputs: None,
+			outputs: None,
+			last_output: None,
 		}
 	}
 }
 
 impl Interpreter {
-	pub fn run(&mut self) -> &[i32] {
+	pub fn new(prog: &Program, inputs: Receiver<i32>, outputs: Sender<i32>) -> Self {
+		let mut ram = [0; MAX_PROGRAM_SIZE];
+		for (i, op) in prog.rom.iter().enumerate() {
+			ram[i] = *op;
+		}
+
+		Self {
+			ram,
+			pc: 0,
+			inputs: Some(inputs),
+			outputs: Some(outputs),
+			last_output: None,
+		}
+	}
+
+	pub fn run_with_inputs(program: &Program, inputs: &[i32]) -> Vec<i32> {
+		let out = {
+			let (inputs_sender, inputs_recv) = channel();
+			let (outputs_sender, outputs_recv) = channel();
+			for inp in inputs {
+				inputs_sender.send(*inp).unwrap();
+			}
+			let mut interpreter = Interpreter::new(program, inputs_recv, outputs_sender);
+			interpreter.run();
+			outputs_recv
+		};
+		out.iter().collect::<Vec<_>>()
+	}
+
+	pub fn run(&mut self) {
 		loop {
 			let instruction = Instruction::from(self.read());
 			if instruction.opcode == 99 {
@@ -80,15 +113,6 @@ impl Interpreter {
 			}
 			self.exec(instruction);
 		}
-
-		&self.outputs
-	}
-
-	pub fn run_with_inputs(&mut self, inputs: &[i32]) -> &[i32] {
-		for inp in inputs {
-			self.inputs.push(*inp);
-		}
-		self.run()
 	}
 
 	fn read(&mut self) -> i32 {
@@ -136,17 +160,19 @@ impl Interpreter {
 
 	fn pop_input(&mut self) {
 		let idx = self.read() as usize;
-		if let Some(i) = self.inputs.pop() {
-			self.ram[idx] = i;
+		if let Some(r) = &self.inputs {
+			if let Ok(i) = r.recv() {
+				self.ram[idx] = i;
+			}
 		}
 	}
 
 	fn push_output(&mut self, parameters: &[ParameterMode]) {
 		let value = self.read_parameter(&parameters[0]);
 
-		// Not sure if this is correct, but it fill outputs with zeroes sometimes
-		if value != 0 {
-			self.outputs.push(value);
+		if let Some(out) = &self.outputs {
+			let _ = out.send(value);
+			self.last_output = Some(value);
 		}
 	}
 
@@ -250,53 +276,42 @@ mod tests {
 	#[test]
 	fn test_input_output() {
 		let program = Program::from("3,0,4,0,99");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[42]), &[42]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[42]), &[42]);
 
 		let program = Program::from("4,0,99");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run(), &[4]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[]), &[4]);
 
 		let program = Program::from("3,0,1,0,6,0,4,0,99");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[42]), &[46]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[42]), &[46]);
 	}
 
 	#[test]
 	fn test_equals() {
 		let program = Program::from("3,9,8,9,10,9,4,9,99,-1,8");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[8]), &[1]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[8]), &[1]);
 
 		let program = Program::from("3,9,8,9,10,9,4,9,99,-1,8");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[4]), &[0]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[4]), &[0]);
 
 		let program = Program::from("3,3,1108,-1,8,3,4,3,99");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[8]), &[1]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[8]), &[1]);
 
 		let program = Program::from("3,3,1108,-1,8,3,4,3,99");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[4]), &[0]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[4]), &[0]);
 	}
 
 	#[test]
 	fn test_less_than() {
 		let program = Program::from("3,9,7,9,10,9,4,9,99,-1,8");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[7]), &[1]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[7]), &[1]);
 
 		let program = Program::from("3,9,7,9,10,9,4,9,99,-1,8");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[9]), &[0]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[9]), &[0]);
 
 		let program = Program::from("3,3,1107,-1,8,3,4,3,99");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[7]), &[1]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[7]), &[1]);
 
 		let program = Program::from("3,3,1107,-1,8,3,4,3,99");
-		let mut interpreter = Interpreter::from(&program);
-		check_slice(interpreter.run_with_inputs(&[9]), &[0]);
+		check_slice(&Interpreter::run_with_inputs(&program, &[9]), &[0]);
 	}
 }
