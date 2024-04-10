@@ -5,9 +5,9 @@ pub fn parse_input(input: &str) -> Program {
 }
 
 pub fn part1(input: &Program) -> i64 {
-	*Interpreter::run_with_inputs(input, &[1]).iter().last().unwrap()
+	Interpreter::run_with_inputs(input, &[1])[0]
 }
 
 pub fn part2(input: &Program) -> i64 {
-	Interpreter::run_with_inputs(input, &[5])[0]
+	Interpreter::run_with_inputs(input, &[2])[0]
 }

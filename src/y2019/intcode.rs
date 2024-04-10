@@ -1,34 +1,36 @@
 use std::sync::mpsc::{channel, Receiver, Sender};
 
-const MAX_PROGRAM_SIZE: usize = 1000;
+const MAX_PROGRAM_SIZE: usize = 5000;
 const MAX_PARAMETERS: usize = 5;
 
 pub struct Program {
-	pub rom: Vec<i32>,
+	pub rom: Vec<i64>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum ParameterMode {
 	Position,
 	Immediate,
+	Relative,
 }
 
-impl From<i32> for ParameterMode {
-	fn from(value: i32) -> Self {
+impl From<i64> for ParameterMode {
+	fn from(value: i64) -> Self {
 		match value {
 			1 => Self::Immediate,
+			2 => Self::Relative,
 			_ => Self::Position,
 		}
 	}
 }
 
 struct Instruction {
-	opcode: i32,
+	opcode: i64,
 	parameters: [ParameterMode; MAX_PARAMETERS],
 }
 
-impl From<i32> for Instruction {
-	fn from(value: i32) -> Self {
+impl From<i64> for Instruction {
+	fn from(value: i64) -> Self {
 		let opcode = value % 100;
 		let mut parameters = [ParameterMode::Position; 5];
 		let mut rest = value / 100;
@@ -41,13 +43,14 @@ impl From<i32> for Instruction {
 }
 
 pub struct Interpreter {
-	pub ram: [i32; MAX_PROGRAM_SIZE],
+	pub ram: [i64; MAX_PROGRAM_SIZE],
 	pc: usize,
+	relative_base: i64,
 
-	inputs: Option<Receiver<i32>>,
-	outputs: Option<Sender<i32>>,
+	inputs: Option<Receiver<i64>>,
+	outputs: Option<Sender<i64>>,
 
-	pub last_output: Option<i32>,
+	pub last_output: Option<i64>,
 }
 
 impl From<&str> for Program {
@@ -68,6 +71,7 @@ impl From<&Program> for Interpreter {
 		Self {
 			ram,
 			pc: 0,
+			relative_base: 0,
 			inputs: None,
 			outputs: None,
 			last_output: None,
@@ -76,7 +80,7 @@ impl From<&Program> for Interpreter {
 }
 
 impl Interpreter {
-	pub fn new(prog: &Program, inputs: Receiver<i32>, outputs: Sender<i32>) -> Self {
+	pub fn new(prog: &Program, inputs: Option<Receiver<i64>>, outputs: Option<Sender<i64>>) -> Self {
 		let mut ram = [0; MAX_PROGRAM_SIZE];
 		for (i, op) in prog.rom.iter().enumerate() {
 			ram[i] = *op;
@@ -85,20 +89,21 @@ impl Interpreter {
 		Self {
 			ram,
 			pc: 0,
-			inputs: Some(inputs),
-			outputs: Some(outputs),
+			relative_base: 0,
+			inputs,
+			outputs,
 			last_output: None,
 		}
 	}
 
-	pub fn run_with_inputs(program: &Program, inputs: &[i32]) -> Vec<i32> {
+	pub fn run_with_inputs(program: &Program, inputs: &[i64]) -> Vec<i64> {
 		let out = {
 			let (inputs_sender, inputs_recv) = channel();
 			let (outputs_sender, outputs_recv) = channel();
 			for inp in inputs {
 				inputs_sender.send(*inp).unwrap();
 			}
-			let mut interpreter = Interpreter::new(program, inputs_recv, outputs_sender);
+			let mut interpreter = Interpreter::new(program, Some(inputs_recv), Some(outputs_sender));
 			interpreter.run();
 			outputs_recv
 		};
@@ -115,37 +120,47 @@ impl Interpreter {
 		}
 	}
 
-	fn read(&mut self) -> i32 {
+	fn read(&mut self) -> i64 {
 		let value = self.ram[self.pc];
 		self.pc += 1;
 		value
 	}
 
-	fn read_parameter(&mut self, mode: &ParameterMode) -> i32 {
+	fn read_index(&mut self, mode: &ParameterMode) -> usize {
+		(match mode {
+			ParameterMode::Position | ParameterMode::Immediate => self.read(),
+			ParameterMode::Relative => self.relative_base + self.read(),
+		}) as usize
+	}
+
+	fn read_parameter(&mut self, mode: &ParameterMode) -> i64 {
 		match mode {
 			ParameterMode::Position => self.ram[self.read() as usize],
+			ParameterMode::Relative => self.ram[(self.relative_base + self.read()) as usize],
 			ParameterMode::Immediate => self.read(),
 		}
 	}
 
 	fn exec(&mut self, instruction: Instruction) {
 		match instruction.opcode {
+			0 => (),
 			1 => self.addition(&instruction.parameters),
 			2 => self.multiplication(&instruction.parameters),
-			3 => self.pop_input(),
+			3 => self.pop_input(&instruction.parameters),
 			4 => self.push_output(&instruction.parameters),
 			5 => self.jump_if_true(&instruction.parameters),
 			6 => self.jump_if_false(&instruction.parameters),
 			7 => self.less_than(&instruction.parameters),
 			8 => self.equals(&instruction.parameters),
-			_ => unimplemented!(),
+			9 => self.set_relative_base(&instruction.parameters),
+			_ => unimplemented!("opcode {}", instruction.opcode),
 		}
 	}
 
 	fn addition(&mut self, parameters: &[ParameterMode]) {
 		let a = self.read_parameter(&parameters[0]);
 		let b = self.read_parameter(&parameters[1]);
-		let idx = self.read() as usize;
+		let idx = self.read_index(&parameters[2]);
 
 		self.ram[idx] = a + b;
 	}
@@ -153,13 +168,13 @@ impl Interpreter {
 	fn multiplication(&mut self, parameters: &[ParameterMode]) {
 		let a = self.read_parameter(&parameters[0]);
 		let b = self.read_parameter(&parameters[1]);
-		let idx = self.read() as usize;
+		let idx = self.read_index(&parameters[2]);
 
 		self.ram[idx] = a * b;
 	}
 
-	fn pop_input(&mut self) {
-		let idx = self.read() as usize;
+	fn pop_input(&mut self, parameters: &[ParameterMode]) {
+		let idx = self.read_index(&parameters[0]);
 		if let Some(r) = &self.inputs {
 			if let Ok(i) = r.recv() {
 				self.ram[idx] = i;
@@ -195,15 +210,20 @@ impl Interpreter {
 	fn less_than(&mut self, parameters: &[ParameterMode]) {
 		let a = self.read_parameter(&parameters[0]);
 		let b = self.read_parameter(&parameters[1]);
-		let idx = self.read() as usize;
+		let idx = self.read_index(&parameters[2]);
 		self.ram[idx] = if a < b { 1 } else { 0 };
 	}
 
 	fn equals(&mut self, parameters: &[ParameterMode]) {
 		let a = self.read_parameter(&parameters[0]);
 		let b = self.read_parameter(&parameters[1]);
-		let idx = self.read() as usize;
+		let idx = self.read_index(&parameters[2]);
 		self.ram[idx] = if a == b { 1 } else { 0 };
+	}
+
+	fn set_relative_base(&mut self, parameters: &[ParameterMode]) {
+		let a = self.read_parameter(&parameters[0]);
+		self.relative_base += a;
 	}
 }
 
@@ -211,7 +231,7 @@ impl Interpreter {
 mod tests {
 	use super::*;
 
-	fn check_slice(left: &[i32], right: &[i32]) {
+	fn check_slice(left: &[i64], right: &[i64]) {
 		for (l, r) in left.iter().zip(right.iter()) {
 			assert_eq!(l, r);
 		}
@@ -313,5 +333,32 @@ mod tests {
 
 		let program = Program::from("3,3,1107,-1,8,3,4,3,99");
 		check_slice(&Interpreter::run_with_inputs(&program, &[9]), &[0]);
+	}
+
+	#[test]
+	fn test_relative_base() {
+		let program = Program::from("109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99");
+		check_slice(&Interpreter::run_with_inputs(&program, &[]), &program.rom);
+		let program = Program::from("1102,34915192,34915192,7,4,7,99,0");
+		assert!(Interpreter::run_with_inputs(&program, &[])[0] >= 1000000000000000);
+		let program = Program::from("104,1125899906842624,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[])[0], 1125899906842624);
+
+		let program = Program::from("109,-1,4,1,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[])[0], -1);
+		let program = Program::from("109,-1,104,1,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[])[0], 1);
+		let program = Program::from("109,-1,204,1,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[])[0], 109);
+		let program = Program::from("109,1,9,2,204,-6,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[])[0], 204);
+		let program = Program::from("109,1,109,9,204,-6,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[])[0], 204);
+		let program = Program::from("109,1,209,-1,204,-106,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[])[0], 204);
+		let program = Program::from("109,1,3,3,204,2,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[56])[0], 56);
+		let program = Program::from("109,1,203,2,204,2,99");
+		assert_eq!(Interpreter::run_with_inputs(&program, &[65])[0], 65);
 	}
 }

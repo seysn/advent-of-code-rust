@@ -8,8 +8,8 @@ pub fn parse_input(input: &str) -> Program {
 	Program::from(input)
 }
 
-pub fn part1(input: &Program) -> i32 {
-	let mut res = i32::MIN;
+pub fn part1(input: &Program) -> i64 {
+	let mut res = i64::MIN;
 	for seq in (0..5).permutations(5) {
 		let mut out = 0;
 		for phase in seq {
@@ -20,7 +20,7 @@ pub fn part1(input: &Program) -> i32 {
 	res
 }
 
-fn run_amplifiers(input: &Program, seq: &[i32]) -> i32 {
+fn run_amplifiers(input: &Program, seq: &[i64]) -> i64 {
 	let (outputs_sender_e, inputs_recv_a) = channel();
 	let (outputs_sender_a, inputs_recv_b) = channel();
 	let (outputs_sender_b, inputs_recv_c) = channel();
@@ -33,11 +33,11 @@ fn run_amplifiers(input: &Program, seq: &[i32]) -> i32 {
 	outputs_sender_c.send(seq[3]).unwrap();
 	outputs_sender_d.send(seq[4]).unwrap();
 
-	let mut amp_a = Interpreter::new(input, inputs_recv_a, outputs_sender_a);
-	let mut amp_b = Interpreter::new(input, inputs_recv_b, outputs_sender_b);
-	let mut amp_c = Interpreter::new(input, inputs_recv_c, outputs_sender_c);
-	let mut amp_d = Interpreter::new(input, inputs_recv_d, outputs_sender_d);
-	let mut amp_e = Interpreter::new(input, inputs_recv_e, outputs_sender_e);
+	let mut amp_a = Interpreter::new(input, Some(inputs_recv_a), Some(outputs_sender_a));
+	let mut amp_b = Interpreter::new(input, Some(inputs_recv_b), Some(outputs_sender_b));
+	let mut amp_c = Interpreter::new(input, Some(inputs_recv_c), Some(outputs_sender_c));
+	let mut amp_d = Interpreter::new(input, Some(inputs_recv_d), Some(outputs_sender_d));
+	let mut amp_e = Interpreter::new(input, Some(inputs_recv_e), Some(outputs_sender_e));
 
 	thread::spawn(move || amp_a.run());
 	thread::spawn(move || amp_b.run());
@@ -51,8 +51,8 @@ fn run_amplifiers(input: &Program, seq: &[i32]) -> i32 {
 	e.join().unwrap().unwrap()
 }
 
-pub fn part2(input: &Program) -> i32 {
-	let mut res = i32::MIN;
+pub fn part2(input: &Program) -> i64 {
+	let mut res = i64::MIN;
 
 	for seq in (5..10).permutations(5) {
 		res = res.max(run_amplifiers(input, &seq));
