@@ -1,19 +1,20 @@
 use std::collections::HashMap;
 
-pub fn parse_input(input: &str) -> Vec<Vec<u64>> {
+pub fn parse_input(input: &str) -> Vec<(u64, u64)> {
 	input
 		.lines()
-		.map(|l| l.split_whitespace().map(|s| s.parse().unwrap()).collect())
+		.map(|l| l.split_once("   ").unwrap())
+		.map(|(a, b)| (a.parse().unwrap(), b.parse().unwrap()))
 		.collect()
 }
 
-pub fn part1(input: &[Vec<u64>]) -> u64 {
+pub fn part1(input: &[(u64, u64)]) -> u64 {
 	let mut fst = Vec::new();
 	let mut snd = Vec::new();
 
-	for v in input {
-		fst.push(v[0]);
-		snd.push(v[1]);
+	for (a, b) in input {
+		fst.push(*a);
+		snd.push(*b);
 	}
 
 	fst.sort();
@@ -26,18 +27,16 @@ pub fn part1(input: &[Vec<u64>]) -> u64 {
 	res
 }
 
-pub fn part2(input: &[Vec<u64>]) -> u64 {
+pub fn part2(input: &[(u64, u64)]) -> u64 {
 	let mut snd = HashMap::new();
 
-	for v in input {
-		*snd.entry(v[1]).or_insert(0_u64) += 1;
+	for (_, b) in input {
+		*snd.entry(b).or_insert(0_u64) += 1;
 	}
 
 	let mut res = 0;
-	for v in input {
-		let a = v[0];
-		let b = *snd.get(&v[0]).unwrap_or(&0);
-		// dbg!(a, b, a * b);
+	for (a, _) in input {
+		let b = *snd.get(&a).unwrap_or(&0);
 		res += a * b;
 	}
 
