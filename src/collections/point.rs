@@ -19,6 +19,19 @@ impl Vector {
 	pub const SOUTH_EAST: Self = Self(1, 1);
 	pub const SOUTH_WEST: Self = Self(-1, 1);
 	pub const NORTH_WEST: Self = Self(-1, -1);
+
+	pub const CARDINAL: [Self; 4] = [Self::NORTH, Self::EAST, Self::SOUTH, Self::WEST];
+	pub const ORDINAL: [Self; 4] = [Self::NORTH_EAST, Self::SOUTH_EAST, Self::SOUTH_WEST, Self::NORTH_WEST];
+	pub const DIRECTIONS: [Self; 8] = [
+		Self::NORTH,
+		Self::NORTH_EAST,
+		Self::EAST,
+		Self::SOUTH_EAST,
+		Self::SOUTH,
+		Self::SOUTH_WEST,
+		Self::WEST,
+		Self::NORTH_WEST,
+	];
 }
 
 impl From<char> for Vector {
@@ -82,6 +95,14 @@ impl AddAssign<&Vector> for Point {
 	fn add_assign(&mut self, v: &Vector) {
 		self.0 += v.0;
 		self.1 += v.1;
+	}
+}
+
+impl Mul<i32> for &Vector {
+	type Output = Vector;
+
+	fn mul(self, rhs: i32) -> Self::Output {
+		Vector(self.0 * rhs, self.1 * rhs)
 	}
 }
 
