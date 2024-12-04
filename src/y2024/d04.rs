@@ -111,7 +111,6 @@ impl Grid<char> {
 				let b = (tr == 'M' && bl == 'S') || (tr == 'S' && bl == 'M');
 
 				if a && b {
-					println!("found {x} {y}");
 					res += 1;
 				}
 			}
