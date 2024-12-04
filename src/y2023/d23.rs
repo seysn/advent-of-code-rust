@@ -1,19 +1,19 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use crate::collections::{Direction, Grid, Point};
+use crate::collections::{Grid, Point, Vector};
 
 #[derive(Clone, Copy)]
 pub enum Tile {
 	Path,
 	Forest,
-	Slope(Direction),
+	Slope(Vector),
 }
 
 struct Neighbors<'a> {
 	grid: &'a Grid<Tile>,
 	point: Point,
 	slopes: bool,
-	it: std::slice::Iter<'a, Direction>,
+	it: std::slice::Iter<'a, Vector>,
 }
 
 struct Graph {
@@ -28,7 +28,7 @@ impl<'a> Neighbors<'a> {
 			grid,
 			point,
 			slopes,
-			it: [Direction::North, Direction::South, Direction::West, Direction::East].iter(),
+			it: [Vector::NORTH, Vector::SOUTH, Vector::WEST, Vector::EAST].iter(),
 		}
 	}
 }
@@ -62,7 +62,7 @@ impl From<char> for Tile {
 		match value {
 			'.' => Self::Path,
 			'#' => Self::Forest,
-			c => Self::Slope(Direction::from(c)),
+			c => Self::Slope(Vector::from(c)),
 		}
 	}
 }

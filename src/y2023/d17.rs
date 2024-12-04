@@ -3,12 +3,12 @@ use std::{
 	ops::Deref,
 };
 
-use crate::collections::{Direction, Grid, Point};
+use crate::collections::{Grid, Point, Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Node {
 	point: Point,
-	direction: Direction,
+	direction: Vector,
 	consecutive: usize,
 }
 
@@ -48,18 +48,13 @@ impl Ord for State {
 }
 
 impl Grid<Number> {
-	fn out_of_bounds(&self, point: Point, direction: Direction) -> bool {
-		match direction {
-			Direction::North => point.1 == 0,
-			Direction::South => point.1 == self.height as i32 - 1,
-			Direction::West => point.0 == 0,
-			Direction::East => point.0 == self.width as i32 - 1,
-		}
+	fn out_of_bounds(&self, point: Point, direction: Vector) -> bool {
+		!self.in_bounds(point + direction)
 	}
 
 	fn neighbors(&self, node: &Node, min_consecutive: usize, max_consecutive: usize) -> Vec<Node> {
 		let mut res = Vec::new();
-		for direction in [Direction::North, Direction::South, Direction::West, Direction::East] {
+		for direction in [Vector::NORTH, Vector::SOUTH, Vector::WEST, Vector::EAST] {
 			if self.out_of_bounds(node.point, direction) {
 				continue;
 			}
@@ -96,7 +91,7 @@ fn search(input: &Grid<Number>, min_consecutive: usize, max_consecutive: usize) 
 		cost: 0,
 		node: Node {
 			point: start,
-			direction: Direction::East,
+			direction: Vector::EAST,
 			consecutive: 0,
 		},
 	});

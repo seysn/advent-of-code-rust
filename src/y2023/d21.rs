@@ -1,6 +1,6 @@
 use std::collections::{HashSet, VecDeque};
 
-use crate::collections::{Direction, Grid, Point};
+use crate::collections::{Grid, Point, Vector};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Cell {
@@ -22,7 +22,7 @@ impl From<char> for Cell {
 
 impl Grid<Cell> {
 	fn neighbors(&self, point: Point) -> Vec<Point> {
-		[Direction::North, Direction::South, Direction::West, Direction::East]
+		[Vector::NORTH, Vector::SOUTH, Vector::WEST, Vector::EAST]
 			.iter()
 			.map(|&dir| point + dir)
 			.filter(|&p| self.in_bounds(p) && matches!(self.get(p), Cell::Plot | Cell::Position))

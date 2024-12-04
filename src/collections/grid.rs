@@ -1,67 +1,6 @@
-use std::ops::{Add, AddAssign};
+use std::ops::Index;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Point(pub i32, pub i32);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Point3D(pub i32, pub i32, pub i32);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Direction {
-	North,
-	South,
-	West,
-	East,
-}
-
-impl From<char> for Direction {
-	fn from(value: char) -> Self {
-		match value {
-			'v' | 'D' | 'S' => Self::South,
-			'^' | 'U' | 'N' => Self::North,
-			'<' | 'L' | 'W' => Self::West,
-			'>' | 'R' | 'E' => Self::East,
-			_ => unimplemented!(),
-		}
-	}
-}
-
-impl Direction {
-	pub fn reverse(&self) -> Direction {
-		match self {
-			Direction::North => Direction::South,
-			Direction::South => Direction::North,
-			Direction::West => Direction::East,
-			Direction::East => Direction::West,
-		}
-	}
-
-	pub fn delta(&self) -> (i32, i32) {
-		match self {
-			Direction::North => (0, -1),
-			Direction::South => (0, 1),
-			Direction::West => (-1, 0),
-			Direction::East => (1, 0),
-		}
-	}
-}
-
-impl Add<Direction> for Point {
-	type Output = Point;
-
-	fn add(self, direction: Direction) -> Self::Output {
-		let (x, y) = direction.delta();
-		Point(self.0 + x, self.1 + y)
-	}
-}
-
-impl AddAssign<&Direction> for Point {
-	fn add_assign(&mut self, rhs: &Direction) {
-		let (x, y) = rhs.delta();
-		self.0 += x;
-		self.1 += y;
-	}
-}
+use super::Point;
 
 #[derive(Debug)]
 pub struct Grid<C> {
@@ -82,7 +21,7 @@ impl<C: From<char>> Grid<C> {
 
 impl<C: Copy> Grid<C> {
 	pub fn get(&self, point: Point) -> C {
-		self.cells[self.width * point.1 as usize + point.0 as usize]
+		self[point]
 	}
 
 	pub fn in_bounds(&self, point: Point) -> bool {
@@ -103,6 +42,14 @@ impl<C: Copy + PartialEq> Grid<C> {
 		}
 
 		res
+	}
+}
+
+impl<C> Index<Point> for Grid<C> {
+	type Output = C;
+
+	fn index(&self, point: Point) -> &Self::Output {
+		&self.cells[self.width * point.1 as usize + point.0 as usize]
 	}
 }
 

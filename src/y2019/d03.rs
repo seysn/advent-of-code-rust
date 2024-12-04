@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::collections::{Direction, Point};
+use crate::collections::{Point, Vector};
 
-type Step = (Direction, i32);
+type Step = (Vector, i32);
 
 pub struct Path {
 	path: Vec<Step>,
@@ -13,7 +13,7 @@ impl From<&str> for Path {
 		Self {
 			path: value
 				.split(',')
-				.map(|value| (Direction::from(value.chars().next().unwrap()), value[1..].parse().unwrap()))
+				.map(|value| (Vector::from(value.chars().next().unwrap()), value[1..].parse().unwrap()))
 				.collect(),
 		}
 	}

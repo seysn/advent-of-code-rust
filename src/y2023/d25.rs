@@ -91,7 +91,6 @@ pub fn parse_input(input: &str) -> Graph {
 	Graph { wires, components }
 }
 
-#[allow(unused_variables)]
 pub fn part1(input: &Graph) -> usize {
 	let mut counter: HashMap<&str, usize> = HashMap::new();
 	let mut rng = &mut rand::thread_rng();
