@@ -20,7 +20,10 @@ macro_rules! run_day {
 			$crate::utils::extract_integer(stringify!($year)).unwrap(),
 			$crate::utils::extract_integer(stringify!($day)).unwrap(),
 		);
+
+		let before = std::time::Instant::now();
 		let input = parse_input(&content);
+		let parse_time = before.elapsed();
 
 		// Running part 1
 		let before = std::time::Instant::now();
@@ -33,8 +36,9 @@ macro_rules! run_day {
 		let part2_time = before.elapsed();
 
 		println!(
-			"{}: part1 = {} ({:.2?}), part2 = {} ({:.2?})",
+			"{}: parse ({:.2?}), part1 = {} ({:.2?}), part2 = {} ({:.2?})",
 			stringify!($day),
+			parse_time,
 			part1_out,
 			part1_time,
 			part2_out,
