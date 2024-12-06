@@ -1,8 +1,8 @@
-use std::ops::Index;
+use std::ops::{Index, IndexMut};
 
 use super::Point;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Grid<C> {
 	pub cells: Vec<C>,
 	pub width: usize,
@@ -50,6 +50,12 @@ impl<C> Index<Point> for Grid<C> {
 
 	fn index(&self, point: Point) -> &Self::Output {
 		&self.cells[self.width * point.1 as usize + point.0 as usize]
+	}
+}
+
+impl<C> IndexMut<Point> for Grid<C> {
+	fn index_mut(&mut self, point: Point) -> &mut Self::Output {
+		&mut self.cells[self.width * point.1 as usize + point.0 as usize]
 	}
 }
 
