@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Mul, MulAssign};
+use std::ops::{Add, AddAssign, Mul, MulAssign, Neg};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point(pub i32, pub i32);
@@ -8,6 +8,12 @@ pub struct Point3D(pub i32, pub i32, pub i32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Vector(pub i32, pub i32);
+
+impl Point {
+	pub fn vector(&self, other: &Self) -> Vector {
+		Vector(other.0 - self.0, other.1 - self.1)
+	}
+}
 
 impl Vector {
 	pub const NORTH: Self = Self(0, -1);
@@ -118,6 +124,14 @@ impl MulAssign<i32> for Vector {
 	fn mul_assign(&mut self, rhs: i32) {
 		self.0 *= rhs;
 		self.1 *= rhs;
+	}
+}
+
+impl Neg for Vector {
+	type Output = Vector;
+
+	fn neg(self) -> Self::Output {
+		Vector(-self.0, -self.1)
 	}
 }
 
