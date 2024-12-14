@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use regex::Regex;
 
 use crate::collections::{Point, Vector};
@@ -61,26 +59,31 @@ pub fn part1(input: &[Robot]) -> u32 {
 
 pub fn part2(input: &[Robot]) -> i32 {
 	let mut robots = input.to_vec();
+	let n = robots.len();
+	let mut xs = Vec::with_capacity(n);
+	let mut ys = Vec::with_capacity(n);
 	for i in 1..10000 {
-		// We search the frame of the tree by looking if we have
-		// 2 columns and 2 rows of at least 30 robots.
-		let mut x: HashMap<i32, u32> = HashMap::new();
-		let mut y: HashMap<i32, u32> = HashMap::new();
+		xs.clear();
+		ys.clear();
+
 		for robot in &mut robots {
 			robot.step(101, 103);
 
-			*x.entry(robot.position.0).or_default() += 1;
-			*y.entry(robot.position.1).or_default() += 1;
+			xs.push(robot.position.0);
+			ys.push(robot.position.1);
 		}
 
-		if x.iter().filter(|(_, i)| **i > 30).count() < 2 {
-			continue;
-		}
-		if y.iter().filter(|(_, i)| **i > 30).count() < 2 {
-			continue;
-		}
+		let x_sum = xs.iter().sum::<i32>();
+		let x_avg = x_sum / n as i32;
+		let x_var = xs.iter().map(|x| (x - x_avg).pow(2)).sum::<i32>() / n as i32;
 
-		return i;
+		let y_sum = ys.iter().sum::<i32>();
+		let y_avg = y_sum / n as i32;
+		let y_var = ys.iter().map(|y| (y - y_avg).pow(2)).sum::<i32>() / n as i32;
+
+		if x_var < 500 && y_var < 500 {
+			return i;
+		}
 	}
 
 	0
