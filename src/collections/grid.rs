@@ -1,4 +1,7 @@
-use std::ops::{Index, IndexMut};
+use std::{
+	fmt::{Display, Write},
+	ops::{Index, IndexMut},
+};
 
 use super::Point;
 
@@ -20,6 +23,15 @@ impl<C: From<char>> Grid<C> {
 }
 
 impl<C: Copy> Grid<C> {
+	#[allow(unused)]
+	pub fn fill(cell: C, width: usize, height: usize) -> Self {
+		Self {
+			cells: vec![cell; width * height],
+			width,
+			height,
+		}
+	}
+
 	pub fn get(&self, point: Point) -> C {
 		self[point]
 	}
@@ -56,6 +68,19 @@ impl<C> Index<Point> for Grid<C> {
 impl<C> IndexMut<Point> for Grid<C> {
 	fn index_mut(&mut self, point: Point) -> &mut Self::Output {
 		&mut self.cells[self.width * point.1 as usize + point.0 as usize]
+	}
+}
+
+impl<C: Display> Display for Grid<C> {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		for y in 0..self.height {
+			for x in 0..self.width {
+				self.cells[self.width * y + x].fmt(f)?;
+			}
+			f.write_char('\n')?;
+		}
+
+		Ok(())
 	}
 }
 
