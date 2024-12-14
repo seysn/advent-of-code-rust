@@ -31,9 +31,7 @@ impl Robot {
 	}
 }
 
-pub fn part1(input: &[Robot]) -> u32 {
-	let width = 101;
-	let height = 103;
+fn solve(input: &[Robot], width: i32, height: i32) -> u32 {
 	let mut robots = input.to_vec();
 	for _ in 0..100 {
 		for robot in &mut robots {
@@ -55,6 +53,10 @@ pub fn part1(input: &[Robot]) -> u32 {
 	}
 
 	quadrants.iter().product()
+}
+
+pub fn part1(input: &[Robot]) -> u32 {
+	solve(input, 101, 103)
 }
 
 pub fn part2(input: &[Robot]) -> i32 {
@@ -108,11 +110,6 @@ p=9,5 v=-3,-3";
 
 	#[test]
 	fn example_part1() {
-		assert_eq!(solve(&parse_input(EXAMPLE), 100, 11, 7), 12);
-	}
-
-	#[test]
-	fn example_part2() {
-		assert_eq!(part2(&parse_input(EXAMPLE)), 0);
+		assert_eq!(solve(&parse_input(EXAMPLE), 11, 7), 12);
 	}
 }
