@@ -31,18 +31,11 @@ impl Robot {
 	}
 }
 
-fn solve(input: &[Robot], width: i32, height: i32) -> u32 {
-	let mut robots = input.to_vec();
-	for _ in 0..100 {
-		for robot in &mut robots {
-			robot.step(width, height);
-		}
-	}
-
+fn safety_factor(robots: &[Robot], width: i32, height: i32) -> u32 {
 	let mut quadrants = [0, 0, 0, 0];
 	let middle_w = width / 2;
 	let middle_h = height / 2;
-	for robot in &robots {
+	for robot in robots {
 		match (robot.position.0.cmp(&middle_w), robot.position.1.cmp(&middle_h)) {
 			(std::cmp::Ordering::Less, std::cmp::Ordering::Less) => quadrants[0] += 1,
 			(std::cmp::Ordering::Less, std::cmp::Ordering::Greater) => quadrants[1] += 1,
@@ -55,40 +48,46 @@ fn solve(input: &[Robot], width: i32, height: i32) -> u32 {
 	quadrants.iter().product()
 }
 
-pub fn part1(input: &[Robot]) -> u32 {
-	solve(input, 101, 103)
-}
-
-pub fn part2(input: &[Robot]) -> i32 {
+fn solve(input: &[Robot], width: i32, height: i32) -> u32 {
 	let mut robots = input.to_vec();
-	let n = robots.len();
-	let mut xs = Vec::with_capacity(n);
-	let mut ys = Vec::with_capacity(n);
-	for i in 1..10000 {
-		xs.clear();
-		ys.clear();
-
+	for _ in 0..100 {
 		for robot in &mut robots {
-			robot.step(101, 103);
-
-			xs.push(robot.position.0);
-			ys.push(robot.position.1);
-		}
-
-		let x_sum = xs.iter().sum::<i32>();
-		let x_avg = x_sum / n as i32;
-		let x_var = xs.iter().map(|x| (x - x_avg).pow(2)).sum::<i32>() / n as i32;
-
-		let y_sum = ys.iter().sum::<i32>();
-		let y_avg = y_sum / n as i32;
-		let y_var = ys.iter().map(|y| (y - y_avg).pow(2)).sum::<i32>() / n as i32;
-
-		if x_var < 500 && y_var < 500 {
-			return i;
+			robot.step(width, height);
 		}
 	}
 
-	0
+	safety_factor(&robots, width, height)
+}
+
+const WIDTH: i32 = 101;
+const HEIGHT: i32 = 103;
+
+pub fn part1(input: &[Robot]) -> u32 {
+	solve(input, WIDTH, HEIGHT)
+}
+
+/// This solution use the fact that our tree is small and localized in one of the four
+/// quadrant, so that mean the safety factor will be small in this case since the product
+/// of 4 numbers is larger if these numbers are all high, and not just one.
+/// The number of loops is hardcoded to 10000, I don't think there's any solution that
+/// need more.
+pub fn part2(input: &[Robot]) -> i32 {
+	let mut robots = input.to_vec();
+	let mut min_s = 0;
+	let mut min_v = safety_factor(&robots, WIDTH, HEIGHT);
+	for s in 1..10000 {
+		for robot in &mut robots {
+			robot.step(WIDTH, HEIGHT);
+		}
+
+		let v: u32 = safety_factor(&robots, WIDTH, HEIGHT);
+		if v < min_v {
+			min_s = s;
+			min_v = v;
+		}
+	}
+
+	min_s
 }
 
 #[cfg(test)]
