@@ -1,4 +1,7 @@
-use std::ops::{Add, AddAssign, Mul, MulAssign, Neg};
+use std::{
+	fmt::{Debug, Display, Write},
+	ops::{Add, AddAssign, Mul, MulAssign, Neg},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point(pub i32, pub i32);
@@ -47,7 +50,7 @@ impl From<char> for Vector {
 			'^' | 'U' | 'N' => Self::NORTH,
 			'<' | 'L' | 'W' => Self::WEST,
 			'>' | 'R' | 'E' => Self::EAST,
-			_ => unimplemented!(),
+			_ => unimplemented!("{value}"),
 		}
 	}
 }
@@ -132,6 +135,20 @@ impl Neg for Vector {
 
 	fn neg(self) -> Self::Output {
 		Vector(-self.0, -self.1)
+	}
+}
+
+impl Display for Vector {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		match *self {
+			Vector::NORTH => f.write_char('^')?,
+			Vector::EAST => f.write_char('>')?,
+			Vector::SOUTH => f.write_char('v')?,
+			Vector::WEST => f.write_char('<')?,
+			_ => Debug::fmt(self, f)?,
+		}
+
+		Ok(())
 	}
 }
 

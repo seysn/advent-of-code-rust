@@ -22,6 +22,14 @@ impl<C: From<char>> Grid<C> {
 	}
 }
 
+impl<C> Grid<C> {
+	pub fn swap(&mut self, a: Point, b: Point) {
+		let a = self.width * a.1 as usize + a.0 as usize;
+		let b = self.width * b.1 as usize + b.0 as usize;
+		self.cells.swap(a, b);
+	}
+}
+
 impl<C: Copy> Grid<C> {
 	#[allow(unused)]
 	pub fn fill(cell: C, width: usize, height: usize) -> Self {
