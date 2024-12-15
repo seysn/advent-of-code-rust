@@ -46,7 +46,7 @@ impl Iterator for Neighbors<'_> {
 				Tile::Path => return Some(point),
 				Tile::Forest => (),
 				Tile::Slope(d) => {
-					if !self.slopes || dir == d {
+					if !self.slopes || dir == *d {
 						return Some(point);
 					}
 				}

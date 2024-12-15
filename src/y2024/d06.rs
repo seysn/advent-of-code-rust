@@ -24,7 +24,7 @@ pub fn parse_input(input: &str) -> Grid<Cell> {
 }
 
 fn visited(input: &Grid<Cell>) -> HashSet<Point> {
-	let mut position = *input.find(Cell::Guard(Vector::NORTH)).first().unwrap();
+	let mut position = input.find(&Cell::Guard(Vector::NORTH)).unwrap();
 	let mut direction = Vector::NORTH;
 
 	let mut visited: HashSet<Point> = HashSet::new();
@@ -35,7 +35,7 @@ fn visited(input: &Grid<Cell>) -> HashSet<Point> {
 			break;
 		}
 
-		if input.get(next) == Cell::Obstacle {
+		if input.get(next) == &Cell::Obstacle {
 			direction = direction.clockwise();
 		} else {
 			position += direction;
@@ -50,7 +50,7 @@ pub fn part1(input: &Grid<Cell>) -> usize {
 }
 
 fn is_looping(grid: &Grid<Cell>) -> bool {
-	let mut position = *grid.find(Cell::Guard(Vector::NORTH)).first().unwrap();
+	let mut position = grid.find(&Cell::Guard(Vector::NORTH)).unwrap();
 	let mut direction = Vector::NORTH;
 
 	let mut visited: HashSet<(Point, Vector)> = HashSet::new();
@@ -64,7 +64,7 @@ fn is_looping(grid: &Grid<Cell>) -> bool {
 			break;
 		}
 
-		if grid.get(next) == Cell::Obstacle {
+		if grid.get(next) == &Cell::Obstacle {
 			direction = direction.clockwise();
 		} else {
 			position += direction;
@@ -83,7 +83,7 @@ fn bruteforce(input: &Grid<Cell>) -> usize {
 	for y in 0..input.height {
 		for x in 0..input.width {
 			let p = Point(x as i32, y as i32);
-			if input.get(p) == Cell::Void {
+			if input.get(p) == &Cell::Void {
 				let mut grid = input.clone();
 				grid[p] = Cell::Obstacle;
 				if is_looping(&grid) {
@@ -97,7 +97,7 @@ fn bruteforce(input: &Grid<Cell>) -> usize {
 
 /// "Optimized" bruteforce that still takes a lot of time
 fn bruteforce2(input: &Grid<Cell>) -> usize {
-	let start = *input.find(Cell::Guard(Vector::NORTH)).first().unwrap();
+	let start = input.find(&Cell::Guard(Vector::NORTH)).unwrap();
 	let visited = visited(input);
 
 	let mut res = 0;
@@ -108,7 +108,7 @@ fn bruteforce2(input: &Grid<Cell>) -> usize {
 				continue;
 			}
 
-			if input.get(p) == Cell::Void {
+			if input.get(p) == &Cell::Void {
 				let mut grid = input.clone();
 				grid[p] = Cell::Obstacle;
 				if is_looping(&grid) {

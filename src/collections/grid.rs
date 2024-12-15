@@ -23,6 +23,14 @@ impl<C: From<char>> Grid<C> {
 }
 
 impl<C> Grid<C> {
+	pub fn get(&self, point: Point) -> &C {
+		&self[point]
+	}
+
+	pub fn set(&mut self, point: Point, c: C) {
+		self[point] = c;
+	}
+
 	pub fn swap(&mut self, a: Point, b: Point) {
 		let a = self.width * a.1 as usize + a.0 as usize;
 		let b = self.width * b.1 as usize + b.0 as usize;
@@ -30,18 +38,14 @@ impl<C> Grid<C> {
 	}
 }
 
-impl<C: Copy> Grid<C> {
+impl<C: Clone> Grid<C> {
 	#[allow(unused)]
-	pub fn fill(cell: C, width: usize, height: usize) -> Self {
+	pub fn fill(cell: &C, width: usize, height: usize) -> Self {
 		Self {
-			cells: vec![cell; width * height],
+			cells: vec![cell.clone(); width * height],
 			width,
 			height,
 		}
-	}
-
-	pub fn get(&self, point: Point) -> C {
-		self[point]
 	}
 
 	pub fn in_bounds(&self, point: Point) -> bool {
@@ -49,8 +53,21 @@ impl<C: Copy> Grid<C> {
 	}
 }
 
-impl<C: Copy + PartialEq> Grid<C> {
-	pub fn find(&self, cell: C) -> Vec<Point> {
+impl<C: PartialEq> Grid<C> {
+	pub fn find(&self, cell: &C) -> Option<Point> {
+		for y in 0..self.height {
+			for x in 0..self.width {
+				let point = Point(x as i32, y as i32);
+				if self.get(point) == cell {
+					return Some(point);
+				}
+			}
+		}
+
+		None
+	}
+
+	pub fn find_all(&self, cell: &C) -> Vec<Point> {
 		let mut res = Vec::new();
 		for y in 0..self.height {
 			for x in 0..self.width {
@@ -121,7 +138,7 @@ mod tests {
 
 		assert_eq!(grid.height, 2);
 		assert_eq!(grid.width, 3);
-		assert_eq!(grid.get(Point(1, 1)), Cell::On);
+		assert_eq!(grid.get(Point(1, 1)), &Cell::On);
 	}
 
 	#[test]
@@ -147,6 +164,6 @@ mod tests {
 
 		assert_eq!(grid.height, 2);
 		assert_eq!(grid.width, 3);
-		assert_eq!(*grid.get(Point(1, 1)), 5);
+		assert_eq!(**grid.get(Point(1, 1)), 5);
 	}
 }

@@ -105,7 +105,7 @@ fn search(input: &Grid<Number>, min_consecutive: usize, max_consecutive: usize) 
 		}
 
 		for next in input.neighbors(&current.node, min_consecutive, max_consecutive) {
-			let new_cost = current.cost + *input.get(next.point);
+			let new_cost = current.cost + **input.get(next.point);
 			if let Some(&best) = distances.get(&next) {
 				if new_cost >= best {
 					continue;

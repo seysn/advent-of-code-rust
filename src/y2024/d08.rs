@@ -11,7 +11,7 @@ fn antennas(input: &Grid<char>) -> HashMap<char, Vec<Point>> {
 	for j in 0..input.height {
 		for i in 0..input.width {
 			let p = Point(i as i32, j as i32);
-			let c = input.get(p);
+			let c = *input.get(p);
 			if c != '.' {
 				antennas.entry(c).or_default().push(p);
 			}

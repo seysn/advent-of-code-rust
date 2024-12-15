@@ -82,7 +82,7 @@ pub fn part1(input: &Grid<Element>) -> u64 {
 		let mut tmp = String::new();
 		while column < input.width {
 			match input.get(Point(column as i32, line as i32)) {
-				Element::Number(n) => tmp.push(n),
+				Element::Number(n) => tmp.push(*n),
 				Element::Symbol(_) => {
 					if !tmp.is_empty() {
 						res += tmp.parse::<u64>().unwrap();
@@ -127,7 +127,7 @@ pub fn part2(input: &Grid<Element>) -> u64 {
 		let mut tmp = String::new();
 		while column < input.width {
 			match input.get(Point(column as i32, line as i32)) {
-				Element::Number(n) => tmp.push(n),
+				Element::Number(n) => tmp.push(*n),
 				Element::Symbol(_) | Element::None => {
 					if !tmp.is_empty() {
 						let start = column - tmp.len();

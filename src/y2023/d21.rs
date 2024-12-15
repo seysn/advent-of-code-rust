@@ -58,14 +58,14 @@ pub fn parse_input(input: &str) -> Grid<Cell> {
 }
 
 pub fn part1(input: &Grid<Cell>) -> usize {
-	input.steps(input.find(Cell::Position).first().unwrap(), 64)
+	input.steps(&input.find(&Cell::Position).unwrap(), 64)
 }
 
 pub fn part2(input: &Grid<Cell>) -> usize {
 	let steps: usize = 26501365;
 	let grid_size = input.width;
 	let n_grid_radius = steps.div_euclid(input.width) - 1;
-	let starting_points = input.find(Cell::Position);
+	let starting_points = input.find_all(&Cell::Position);
 	let start = starting_points.first().unwrap();
 
 	let n_grid_odd = (n_grid_radius.div_euclid(2) * 2 + 1).pow(2);
@@ -126,11 +126,10 @@ mod tests {
 	#[test]
 	fn example_part1() {
 		let grid = parse_input(EXAMPLE);
-		let starting_points = grid.find(Cell::Position);
-		let start = starting_points.first().unwrap();
-		assert_eq!(grid.steps(start, 1), 2);
-		assert_eq!(grid.steps(start, 2), 4);
-		assert_eq!(grid.steps(start, 6), 16);
+		let start = grid.find(&Cell::Position).unwrap();
+		assert_eq!(grid.steps(&start, 1), 2);
+		assert_eq!(grid.steps(&start, 2), 4);
+		assert_eq!(grid.steps(&start, 6), 16);
 	}
 
 	#[test]

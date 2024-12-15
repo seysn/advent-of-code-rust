@@ -47,14 +47,14 @@ fn trail(p: Point, input: &Grid<Height>, tails: &mut Option<HashSet<Point>>) -> 
 
 pub fn part1(input: &Grid<Height>) -> u32 {
 	input
-		.find(Height(0))
+		.find_all(&Height(0))
 		.iter()
 		.map(|p| trail(*p, input, &mut Some(HashSet::new())))
 		.sum()
 }
 
 pub fn part2(input: &Grid<Height>) -> u32 {
-	input.find(Height(0)).iter().map(|p| trail(*p, input, &mut None)).sum()
+	input.find_all(&Height(0)).iter().map(|p| trail(*p, input, &mut None)).sum()
 }
 
 #[cfg(test)]

@@ -71,7 +71,7 @@ fn search_void(grid: &Grid<Cell>, cell: Point, movement: Vector) -> Option<Point
 
 pub fn part1(input: &Input) -> i32 {
 	let mut grid = input.grid.clone();
-	let mut robot = *grid.find(Cell::Robot).first().unwrap();
+	let mut robot = grid.find(&Cell::Robot).unwrap();
 
 	for v in &input.movements {
 		let new = robot + v;
@@ -96,7 +96,7 @@ pub fn part1(input: &Input) -> i32 {
 		}
 	}
 
-	grid.find(Cell::Box).iter().map(|p| 100 * p.1 + p.0).sum()
+	grid.find_all(&Cell::Box).iter().map(|p| 100 * p.1 + p.0).sum()
 }
 
 fn search_voids(grid: &Grid<Cell>, cell: Point, movement: Vector) -> HashSet<Point> {
@@ -143,7 +143,7 @@ fn search_voids(grid: &Grid<Cell>, cell: Point, movement: Vector) -> HashSet<Poi
 }
 
 pub fn part2(input: &Input) -> i32 {
-	let mut grid = Grid::fill(Cell::Void, input.grid.width * 2, input.grid.height);
+	let mut grid = Grid::fill(&Cell::Void, input.grid.width * 2, input.grid.height);
 	for (i, c) in input.grid.cells.iter().enumerate() {
 		match c {
 			Cell::Void | Cell::Wall => {
@@ -162,7 +162,7 @@ pub fn part2(input: &Input) -> i32 {
 		}
 	}
 
-	let mut robot = *grid.find(Cell::Robot).first().unwrap();
+	let mut robot = grid.find(&Cell::Robot).unwrap();
 	for v in &input.movements {
 		let new = robot + v;
 		match (grid[new], v) {
@@ -215,7 +215,7 @@ pub fn part2(input: &Input) -> i32 {
 		}
 	}
 
-	grid.find(Cell::BoxLeft).iter().map(|p| 100 * p.1 + p.0).sum()
+	grid.find_all(&Cell::BoxLeft).iter().map(|p| 100 * p.1 + p.0).sum()
 }
 
 #[cfg(test)]
