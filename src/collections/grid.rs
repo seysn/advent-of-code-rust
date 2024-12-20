@@ -36,6 +36,10 @@ impl<C> Grid<C> {
 		let b = self.width * b.1 as usize + b.0 as usize;
 		self.cells.swap(a, b);
 	}
+
+	pub fn in_bounds(&self, point: Point) -> bool {
+		point.0 >= 0 && point.1 >= 0 && point.0 < self.width as i32 && point.1 < self.height as i32
+	}
 }
 
 impl<C: Clone> Grid<C> {
@@ -46,10 +50,6 @@ impl<C: Clone> Grid<C> {
 			width,
 			height,
 		}
-	}
-
-	pub fn in_bounds(&self, point: Point) -> bool {
-		point.0 >= 0 && point.1 >= 0 && point.0 < self.width as i32 && point.1 < self.height as i32
 	}
 }
 

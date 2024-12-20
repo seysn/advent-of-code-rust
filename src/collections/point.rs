@@ -29,8 +29,11 @@ impl Vector {
 	pub const SOUTH_WEST: Self = Self(-1, 1);
 	pub const NORTH_WEST: Self = Self(-1, -1);
 
+	/// North, East, South, East
 	pub const CARDINAL: [Self; 4] = [Self::NORTH, Self::EAST, Self::SOUTH, Self::WEST];
+	/// North-East, South-East, South-West, North-West
 	pub const ORDINAL: [Self; 4] = [Self::NORTH_EAST, Self::SOUTH_EAST, Self::SOUTH_WEST, Self::NORTH_WEST];
+	/// North, North-East, East, South-East, South, South-West, West, North-West
 	pub const DIRECTIONS: [Self; 8] = [
 		Self::NORTH,
 		Self::NORTH_EAST,
@@ -69,6 +72,11 @@ impl Vector {
 	#[inline]
 	pub fn counter_clockwise(&self) -> Self {
 		Self(self.1, -self.0)
+	}
+
+	#[inline]
+	pub fn manhattan_distance(&self) -> u32 {
+		(self.0.abs() + self.1.abs()) as u32
 	}
 }
 
