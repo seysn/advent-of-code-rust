@@ -13,6 +13,7 @@ mod y2024;
 #[macro_export]
 macro_rules! run_day {
 	($year:path, $day:path) => {{
+		use $crate::utils::colored_time;
 		use $day::{parse_input, part1, part2};
 
 		// Read and parse input
@@ -36,13 +37,13 @@ macro_rules! run_day {
 		let part2_time = before.elapsed();
 
 		println!(
-			"{}: parse ({:.2?}), part1 = {} ({:.2?}), part2 = {} ({:.2?})",
+			"{}: parse ({}), part1 = {} ({}), part2 = {} ({})",
 			stringify!($day),
-			parse_time,
+			colored_time(parse_time),
 			part1_out,
-			part1_time,
+			colored_time(part1_time),
 			part2_out,
-			part2_time
+			colored_time(part2_time),
 		);
 	}};
 }

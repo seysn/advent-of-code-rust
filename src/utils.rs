@@ -1,7 +1,9 @@
 use std::io::Write;
 use std::path::Path;
+use std::time::Duration;
 use std::{fs, io};
 
+use colored::{ColoredString, Colorize};
 use reqwest::blocking::Client;
 use reqwest::header::{HeaderMap, COOKIE};
 
@@ -81,5 +83,17 @@ pub fn get_input(year: u16, day: u8) -> String {
 		fs::write(filename, &text).unwrap();
 
 		text
+	}
+}
+
+pub fn colored_time(duration: Duration) -> ColoredString {
+	let s = format!("{duration:.2?}");
+	let ms = duration.as_millis();
+
+	match ms {
+		0..10 => s.green(),
+		10..100 => s.yellow(),
+		100..1000 => s.truecolor(255, 165, 0),
+		_ => s.red(),
 	}
 }
