@@ -95,12 +95,14 @@ def generate(year: int):
         
     day_file = year_folder / f"d{next_day:02}.rs"
     day_file.write_text(DAY_TEMPLATE)
+    print(f"wrote {day_file}")
     mod_file = year_folder / "mod.rs"
     if mod_file.exists():
         extra_mods = [line for line in mod_file.read_text().splitlines() if is_extra_mod(line)]
     else:
         extra_mods = []
     mod_file.write_text(generate_mod_file(year, next_day, extra_mods))
+    print(f"wrote {mod_file}")
 
 def get_last_year() -> int:
     now = datetime.datetime.now(tz=datetime.timezone.utc)
