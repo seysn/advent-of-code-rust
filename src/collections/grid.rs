@@ -54,6 +54,20 @@ impl<C: Clone> Grid<C> {
 }
 
 impl<C: PartialEq> Grid<C> {
+	pub fn count(&self, cell: &C) -> usize {
+		let mut amount = 0;
+		for y in 0..self.height {
+			for x in 0..self.width {
+				let point = Point(x as i32, y as i32);
+				if self.get(point) == cell {
+					amount += 1;
+				}
+			}
+		}
+
+		amount
+	}
+
 	pub fn find(&self, cell: &C) -> Option<Point> {
 		for y in 0..self.height {
 			for x in 0..self.width {
