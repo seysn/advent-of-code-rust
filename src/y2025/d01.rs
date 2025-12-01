@@ -12,16 +12,18 @@ pub fn parse_input(input: &str) -> Vec<Instruction> {
 	input
 		.lines()
 		.map(|l| {
-			let mut chars = l.chars();
-			let direction = match chars.next().unwrap() {
-				'L' => Direction::Left,
-				'R' => Direction::Right,
-				_ => unreachable!(),
-			};
-
-			Instruction {
-				direction,
-				step: l[1..].parse().unwrap(),
+			if let Some(step) = l.strip_prefix('L') {
+				Instruction {
+					direction: Direction::Left,
+					step: step.parse().unwrap(),
+				}
+			} else if let Some(step) = l.strip_prefix('R') {
+				Instruction {
+					direction: Direction::Right,
+					step: step.parse().unwrap(),
+				}
+			} else {
+				panic!("Instruction '{l}' is not valid");
 			}
 		})
 		.collect()
@@ -31,20 +33,13 @@ pub fn part1(input: &[Instruction]) -> usize {
 	let mut res = 0;
 	let mut dial = 50;
 	for Instruction { direction, step } in input {
-		let v = match direction {
+		let step = match direction {
 			Direction::Left => -((*step) as i32),
 			Direction::Right => *step as i32,
 		};
 
-		dial += v;
-
-		while dial < 0 {
-			dial += 100;
-		}
-
-		while dial >= 100 {
-			dial -= 100;
-		}
+		dial += step;
+		dial %= 100;
 
 		if dial == 0 {
 			res += 1;
@@ -57,16 +52,37 @@ pub fn part1(input: &[Instruction]) -> usize {
 pub fn part2(input: &[Instruction]) -> i32 {
 	let mut res = 0;
 	let mut dial = 50;
-	for Instruction { direction, step } in input {
-		for _ in 0..*step {
-			match direction {
-				Direction::Left => dial -= 1,
-				Direction::Right => dial += 1,
-			}
+	for instruction in input {
+		match instruction {
+			Instruction {
+				direction: Direction::Left,
+				step,
+			} => {
+				let step = *step as i32;
 
-			dial %= 100;
-			if dial == 0 {
-				res += 1;
+				// First we count whole 100 turns
+				res += step / 100;
+
+				// Then we count cases where we go to negatives with the reminder of 100
+				if dial != 0 && step % 100 >= dial {
+					res += 1;
+				}
+
+				// Finally we can make the move
+				dial = (dial - step).rem_euclid(100);
+			}
+			Instruction {
+				direction: Direction::Right,
+				step,
+			} => {
+				let step = *step as i32;
+
+				// First we make the move
+				dial += step;
+
+				// Then we can just remove every 100s and put them in the counter
+				res += dial / 100;
+				dial %= 100;
 			}
 		}
 	}
