@@ -70,7 +70,7 @@ impl<'a, 'b> Graph<'a> {
 	}
 }
 
-pub fn parse_input(input: &str) -> Graph {
+pub fn parse_input(input: &str) -> Graph<'_> {
 	let mut wires: HashMap<&str, HashSet<&str>> = HashMap::new();
 
 	for line in input.lines() {

@@ -5,7 +5,7 @@ pub struct Map<'a> {
 	r_orbits: HashMap<&'a str, HashSet<&'a str>>,
 }
 
-pub fn parse_input(input: &str) -> Map {
+pub fn parse_input(input: &str) -> Map<'_> {
 	let mut orbits: HashMap<&str, HashSet<&str>> = HashMap::new();
 	let mut r_orbits: HashMap<&str, HashSet<&str>> = HashMap::new();
 

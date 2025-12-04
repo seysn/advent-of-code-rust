@@ -15,7 +15,7 @@ fn step(stone: u64) -> Step {
 	}
 
 	let numbers = stone.ilog10() as u64 + 1;
-	if numbers % 2 == 0 {
+	if numbers.is_multiple_of(2) {
 		let p = 10u64.pow(numbers as u32 / 2);
 		Step::Splited(stone / p, stone % p)
 	} else {

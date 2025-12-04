@@ -7,10 +7,8 @@ impl Grid {
 	fn score(&self, differences: usize) -> usize {
 		if let Some(i) = pattern_notes(&self.lines, differences) {
 			i * 100
-		} else if let Some(i) = pattern_notes(&self.rows, differences) {
-			i
 		} else {
-			0
+			pattern_notes(&self.rows, differences).unwrap_or_default()
 		}
 	}
 }

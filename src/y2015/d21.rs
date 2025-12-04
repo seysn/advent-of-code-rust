@@ -120,7 +120,7 @@ pub fn part1(input: &Boss) -> u32 {
 	let mut res = Vec::new();
 	for dmg in damage {
 		let hit_per_turn = if input.armor >= dmg.value { 1 } else { dmg.value - input.armor };
-		let turns = if input.hit_points % hit_per_turn == 0 {
+		let turns = if input.hit_points.is_multiple_of(hit_per_turn) {
 			input.hit_points / hit_per_turn
 		} else {
 			input.hit_points / hit_per_turn + 1
@@ -156,7 +156,7 @@ pub fn part2(input: &Boss) -> u32 {
 	let mut res = Vec::new();
 	for dmg in damage {
 		let hit_per_turn = if input.armor >= dmg.value { 1 } else { dmg.value - input.armor };
-		let turns = if input.hit_points % hit_per_turn == 0 {
+		let turns = if input.hit_points.is_multiple_of(hit_per_turn) {
 			input.hit_points / hit_per_turn
 		} else {
 			input.hit_points / hit_per_turn + 1

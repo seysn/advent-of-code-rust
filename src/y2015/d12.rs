@@ -4,10 +4,10 @@ pub fn parse_input(input: &str) -> serde_json::Value {
 
 fn sum_json(value: &serde_json::Value, ignore_key: &Option<String>) -> i64 {
 	if let Some(obj) = value.as_object() {
-		if let Some(key) = ignore_key {
-			if obj.values().filter_map(|v| v.as_str()).any(|v| v == key) {
-				return 0;
-			}
+		if let Some(key) = ignore_key
+			&& obj.values().filter_map(|v| v.as_str()).any(|v| v == key)
+		{
+			return 0;
 		}
 
 		return obj.values().map(|v| sum_json(v, ignore_key)).sum();

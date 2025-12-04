@@ -116,7 +116,7 @@ impl Grid<Tile> {
 		unreachable!()
 	}
 
-	fn neighbors(&self, point: Point, slopes: bool) -> Neighbors {
+	fn neighbors(&self, point: Point, slopes: bool) -> Neighbors<'_> {
 		Neighbors::new(self, point, slopes)
 	}
 

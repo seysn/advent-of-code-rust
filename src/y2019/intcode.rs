@@ -1,4 +1,4 @@
-use std::sync::mpsc::{channel, Receiver, Sender};
+use std::sync::mpsc::{Receiver, Sender, channel};
 
 const MAX_PROGRAM_SIZE: usize = 5000;
 const MAX_PARAMETERS: usize = 5;
@@ -175,10 +175,10 @@ impl Interpreter {
 
 	fn pop_input(&mut self, parameters: &[ParameterMode]) {
 		let idx = self.read_index(&parameters[0]);
-		if let Some(r) = &self.inputs {
-			if let Ok(i) = r.recv() {
-				self.ram[idx] = i;
-			}
+		if let Some(r) = &self.inputs
+			&& let Ok(i) = r.recv()
+		{
+			self.ram[idx] = i;
 		}
 	}
 

@@ -36,7 +36,7 @@ pub fn part2(input: &[String]) -> u32 {
 		.iter()
 		.map(|l| {
 			let mut res = Vec::new();
-			for (idx, c) in l.chars().enumerate() {
+			for (idx, c) in l.char_indices() {
 				if c.is_numeric() {
 					res.push(c.to_digit(10).unwrap());
 					continue;

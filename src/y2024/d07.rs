@@ -35,7 +35,7 @@ fn solve(input: &[Equation], concatenation: bool) -> u64 {
 			results = new_results;
 		}
 
-		if results.iter().any(|v| *v == eq.result) {
+		if results.contains(&eq.result) {
 			res += eq.result;
 		}
 	}

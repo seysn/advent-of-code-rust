@@ -22,11 +22,11 @@ fn is_possible(design: &str, patterns: &[String], cache: &mut HashMap<String, bo
 	}
 
 	for pattern in patterns {
-		if let Some(s) = design.strip_prefix(pattern) {
-			if s.is_empty() || is_possible(s, patterns, cache) {
-				cache.insert(s.to_owned(), true);
-				return true;
-			}
+		if let Some(s) = design.strip_prefix(pattern)
+			&& (s.is_empty() || is_possible(s, patterns, cache))
+		{
+			cache.insert(s.to_owned(), true);
+			return true;
 		}
 	}
 

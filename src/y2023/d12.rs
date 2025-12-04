@@ -26,7 +26,7 @@ fn generate(record: &[char], groups: &[usize], cache: &mut HashMap<String, usize
 	}
 
 	if groups.is_empty() {
-		if record.iter().any(|&c| c == '#') {
+		if record.contains(&'#') {
 			cache.insert(record_s, 0);
 			return 0;
 		}

@@ -106,7 +106,7 @@ pub fn part2(input: &[Monkey]) -> usize {
 			let items: Vec<u64> = monkeys[i].items.iter().map(|old| monkeys[i].operation.compute(old)).collect();
 			for item in items.iter() {
 				let worry = item % global_modulo;
-				let id = if worry % monkeys[i].test == 0 {
+				let id = if worry.is_multiple_of(monkeys[i].test) {
 					monkeys[i].throw_true
 				} else {
 					monkeys[i].throw_false

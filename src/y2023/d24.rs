@@ -95,6 +95,7 @@ fn gaussian_elimination(eqs: &mut [[f64; 7]; 6]) -> (f64, f64, f64) {
 			let multiple = eqs[row][i];
 			eqs[row][i] = 0.0;
 			if multiple != 0.0 {
+				#[allow(clippy::needless_range_loop)]
 				for col in i + 1..7 {
 					eqs[row][col] -= eqs[i][col] * multiple;
 				}

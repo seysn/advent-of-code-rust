@@ -96,10 +96,10 @@ impl Grid<Cell> {
 		cost_so_far.insert(start, 0);
 
 		while let Some(current) = frontier.pop() {
-			if let Some(pos) = end {
-				if current == pos {
-					return came_from;
-				}
+			if let Some(pos) = end
+				&& current == pos
+			{
+				return came_from;
 			}
 
 			for next in self.neighbors(current.0, current.1) {
