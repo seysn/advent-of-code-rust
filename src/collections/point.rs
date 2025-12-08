@@ -18,6 +18,13 @@ impl Point {
 	}
 }
 
+impl Point3D {
+	pub fn euclidian_distance(&self, other: &Self) -> i64 {
+		((self.0 as i64 - other.0 as i64).pow(2) + (self.1 as i64 - other.1 as i64).pow(2) + (self.2 as i64 - other.2 as i64).pow(2))
+			.isqrt()
+	}
+}
+
 impl Vector {
 	pub const NORTH: Self = Self(0, -1);
 	pub const EAST: Self = Self(1, 0);
